@@ -166,14 +166,11 @@
 
     <!-- Explanation image area (hidden until shown) -->
     <div class="tf-detail" style="display:none;">
-      <video class="tf-video" controls style="max-width: 100%; margin-top: 10px; display:none;">
-  Your browser does not support the video tag.
-</video>
-      <button class="tf-translation-btn" onclick="toggleTranslation(this)" style="display:none; margin-top: 8px;">
-        英訳（えいやく）
-      </button>
+      <video class="tf-video" controls style="max-width: 100%; margin-top: 10px; display:none;"></video>
+      <button class="tf-translation-btn" onclick="toggleTranslation(this)" style="display:none; margin-top: 8px;">英訳（えいやく）</button>
       <div class="tf-translation" style="display:none; margin-top: 8px;"></div>
     </div>
+  </div>
 
 <div class="tf-question"
        data-answer="false"
@@ -197,6 +194,7 @@
       </button>
       <div class="tf-translation" style="display:none; margin-top: 8px;"></div>
     </div>
+</div>
 
 <div class="tf-question"
        data-answer="true"
@@ -220,6 +218,7 @@
       </button>
       <div class="tf-translation" style="display:none; margin-top: 8px;"></div>
     </div>
+</div>
 
 <div class="tf-question"
        data-answer="true"
@@ -244,6 +243,7 @@
       </button>
       <div class="tf-translation" style="display:none; margin-top: 8px;"></div>
     </div>
+</div>
 
 <div class="tf-question"
        data-answer="true"
@@ -268,6 +268,7 @@
       </button>
       <div class="tf-translation" style="display:none; margin-top: 8px;"></div>
     </div>
+</div>
 
 <div class="tf-question"
        data-answer="false"
@@ -292,6 +293,7 @@
       </button>
       <div class="tf-translation" style="display:none; margin-top: 8px;"></div>
     </div>
+</div>
 
 <div class="tf-question"
        data-answer="false"
@@ -316,6 +318,7 @@
       </button>
       <div class="tf-translation" style="display:none; margin-top: 8px;"></div>
     </div>
+</div>
   
 <div class="instructions">
   2. 下の漢字の読み方を⬜︎の中にひらがなで書いてください。
@@ -555,6 +558,24 @@ function checkTF(button, userChoice) {
 
   // Hide detail area if previously opened
   detailBox.style.display = "none";
+}
+<script>
+function toggleDetail(btn) {
+  const box = btn.closest(".tf-question").querySelector(".tf-detail");
+  box.style.display = box.style.display === "none" ? "block" : "none";
+
+  const video = box.querySelector(".tf-video");
+  if (video && video.src) {
+    video.style.display = "block";
+  }
+  
+  const translationBtn = box.querySelector(".tf-translation-btn");
+  if (translationBtn) translationBtn.style.display = "inline-block";
+}
+
+function toggleTranslation(btn) {
+  const box = btn.closest(".tf-detail").querySelector(".tf-translation");
+  box.style.display = box.style.display === "none" ? "block" : "none";
 }
 
   function toggleDetail(button) {
