@@ -77,22 +77,56 @@
   font-weight: bold;
 }
 
+  .sentence {
+  position: relative;
+  padding-left: 12px; /* small space for the number */
+  display: inline-block; /* allows relative positioning */
+  margin-right: 6px; /* spacing between sentences */
+  counter-increment: sentence-counter;
+}
+
+.sentence::before {
+  content: counter(sentence-counter);
+  font-size: 0.6em;
+  position: absolute;
+  left: 0px;
+  top: -0.6em; /* moves number above the first character */
+  color: #555;
+}
+
+body {
+  counter-reset: sentence-counter;
+}
 </style>
 </head>
 <body>
 
 <h2>おじぎ</h2>
-<h3>1. 次の文章（ぶんしょう）を読んで、下の１）〜７）の中から正（ただ）しい（correct）ものを選（えら）んでください。</h3>
+
+<div class="instructions">
+1. 次の文章（ぶんしょう）を読んで、下の１）〜７）の中から正（ただ）しい（correct）ものを選（えら）んでください。
+</div>
   
 <p>
   <!-- Examples: specify action + (for audio) data-audio + (for define) data-key -->
-ミッシェルは、今日本に<span class="word audio" data-action="audio" data-audio="audio/ryuugaku.mp3">留学</span>しています。ホームステイをしていて、毎日<span class="word audio" data-action="audio" data-audio="audio/densha.mp3">電車</span>で大学に行っているので、日本のいろいろな<span class="word audio" data-action="audio" data-audio="audio/shyuukan.mp3">習慣</span>がわかってきました。ミッシェルが<span class="word audio" data-action="audio" data-audio="audio/ichiban.mp3">一番</span>おもしろいと思う<span class="word audio" data-action="audio" data-audio="audio/shyuukan.mp3">習慣</span>は、<span class="word define" data-action="define" data-key="おじぎ">おじぎ</span>です。<span class="word audio" data-action="audio" data-audio="audio/kazoku.mp3">家族</span>どうしが<span class="word define" data-action="define" data-key="おじぎ">おじぎ</span>をすることはありませんが、<span class="word define" data-action="define" data-key="げんかん">げんかん</span>にお<span class="word audio" data-action="audio" data-audio="audio/kyaku.mp3">客</span>さんが来たら、<span class="word define" data-action="define" data-key="おじぎ">おじぎ</span>をします。<span class="word audio" data-action="audio" data-audio="audio/soto.mp3">外</span>で<span class="word audio" data-action="audio" data-audio="audio/kinjyo.mp3">近所</span>の人に<span class="word audio" data-action="audio" data-audio="audio/atta.mp3">会った</span>時も<span class="word define" data-action="define" data-key="おじぎ">おじぎ</span>をします。大学のキャンパスで先生に会って、<span class="word define" data-action="define" data-key="おじぎ">おじぎ</span>をしないのは、とても<span class="word audio" data-action="audio" data-audio="audio/shitsuree.mp3">失礼</span>です。とてもおかしいのは、<span class="word define" data-action="define" data-key="こうしゅう電話">こうしゅう電話</span>で話している人が、電話で話している人に「どうもすみません」とか「どうもありがとうございました」などと言って、<span class="word define" data-action="define" data-key="おじぎ">おじぎ</span>をすることです。
+<span class="sentence">ミッシェルは、今日本に<span class="word audio" data-action="audio" data-audio="audio/ryuugaku.mp3">留学</span>しています。</span>
+<span class="sentence">ホームステイをしていて、毎日<span class="word audio" data-action="audio" data-audio="audio/densha.mp3">電車</span>で大学に行っているので、日本のいろいろな<span class="word audio" data-action="audio" data-audio="audio/shyuukan.mp3">習慣</span>がわかってきました。</span>
+<span class="sentence">ミッシェルが<span class="word audio" data-action="audio" data-audio="audio/ichiban.mp3">一番</span>おもしろいと思う<span class="word audio" data-action="audio" data-audio="audio/shyuukan.mp3">習慣</span>は、<span class="word define" data-action="define" data-key="おじぎ">おじぎ</span>です。</span>
+<span class="sentence"><span class="word audio" data-action="audio" data-audio="audio/kazoku.mp3">家族</span>どうしが<span class="word define" data-action="define" data-key="おじぎ">おじぎ</span>をすることはありませんが、<span class="word define" data-action="define" data-key="げんかん">げんかん</span>にお<span class="word audio" data-action="audio" data-audio="audio/kyaku.mp3">客</span>さんが来たら、<span class="word define" data-action="define" data-key="おじぎ">おじぎ</span>をします。</span>
+<span class="sentence"><span class="word audio" data-action="audio" data-audio="audio/soto.mp3">外</span>で<span class="word audio" data-action="audio" data-audio="audio/kinjyo.mp3">近所</span>の人に<span class="word audio" data-action="audio" data-audio="audio/atta.mp3">会った</span>時も<span class="word define" data-action="define" data-key="おじぎ">おじぎ</span>をします。</span>
+<span class="sentence">大学のキャンパスで先生に会って、<span class="word define" data-action="define" data-key="おじぎ">おじぎ</span>をしないのは、とても<span class="word audio" data-action="audio" data-audio="audio/shitsuree.mp3">失礼</span>です。</span>
+<span class="sentence">とてもおかしいのは、<span class="word define" data-action="define" data-key="こうしゅう電話">こうしゅう電話</span>で話している人が、電話で話している人に「どうもすみません」とか「どうもありがとうございました」などと言って、<span class="word define" data-action="define" data-key="おじぎ">おじぎ</span>をすることです。</span>
 </p>
 <p>
-ミッシェルは、おじぎのことをもっとよく知りたいと思って、大学の<span class="word audio" data-action="audio" data-audio="audio/toshokan.mp3">図書館</span>で日本人の<span class="word audio" data-action="audio" data-audio="audio/shyuukan.mp3">習慣</span>を<span class="word audio" data-action="audio" data-audio="audio/setsumee.mp3">説明</span>している本を<span class="word audio" data-action="audio" data-audio="audio/karite.mp3">借りて</span>、おじぎについて読んでみました。本を読んで、<span class="word audio" data-action="audio" data-audio="audio/tsugi.mp3">次</span>のことがわかりました。まず、<span class="word audio" data-action="audio" data-audio="audio/meue.mp3">目上</span>の人と<span class="word audio" data-action="audio" data-audio="audio/meshita.mp3">目下</span>の人が<span class="word audio" data-action="audio" data-audio="audio/atta.mp3">会った</span>時、<span class="word audio" data-action="audio" data-audio="audio/meshita.mp3">目下</span>の人のほうが<span class="word audio" data-action="audio" data-audio="audio/hukai.mp3">深い</span>おじぎをしなくてはいけません。<span class="word audio" data-action="audio" data-audio="audio/jyosee.mp3">女性</span>と<span class="word audio" data-action="audio" data-audio="audio/dansee.mp3">男性</span>では、ふつう<span class="word audio" data-action="audio" data-audio="audio/jyosee.mp3">女性</span>のほうが<span class="word audio" data-action="audio" data-audio="audio/hukai.mp3">深い</span>おじぎをします。それから、おじぎは<span class="word audio" data-action="audio" data-audio="audio/chikaku.mp3">近く</span>にいる人だけにするものではありません。<span class="word audio" data-action="audio" data-audio="audio/tooku.mp3">遠く</span>に知っている人を見て、その人が友だちだったら、<span class="word define" data-action="define" data-key="手をふる">手をふる</span>だけでいいですが、その人が<span class="word audio" data-action="audio" data-audio="audio/meue.mp3">目上</span>の人だったら、<span class="word define" data-action="define" data-key="手をふる">手をふる</span>のではなくて、<span class="word audio" data-action="audio" data-audio="audio/atama.mp3">頭</span>を<span class="word audio" data-action="audio" data-audio="audio/sukoshi.mp3">少し</span><span class="word audio" data-action="audio" data-audio="audio/sageta.mp3">下げた</span>ほうがいいです。
+<span class="sentence">ミッシェルは、おじぎのことをもっとよく知りたいと思って、大学の<span class="word audio" data-action="audio" data-audio="audio/toshokan.mp3">図書館</span>で日本人の<span class="word audio" data-action="audio" data-audio="audio/shyuukan.mp3">習慣</span>を<span class="word audio" data-action="audio" data-audio="audio/setsumee.mp3">説明</span>している本を<span class="word audio" data-action="audio" data-audio="audio/karite.mp3">借りて</span>、おじぎについて読んでみました。</span>
+<span class="sentence">本を読んで、<span class="word audio" data-action="audio" data-audio="audio/tsugi.mp3">次</span>のことがわかりました。</span>
+<span class="sentence">まず、<span class="word audio" data-action="audio" data-audio="audio/meue.mp3">目上</span>の人と<span class="word audio" data-action="audio" data-audio="audio/meshita.mp3">目下</span>の人が<span class="word audio" data-action="audio" data-audio="audio/atta.mp3">会った</span>時、<span class="word audio" data-action="audio" data-audio="audio/meshita.mp3">目下</span>の人のほうが<span class="word audio" data-action="audio" data-audio="audio/hukai.mp3">深い</span>おじぎをしなくてはいけません。</span>
+<span class="sentence"><span class="word audio" data-action="audio" data-audio="audio/jyosee.mp3">女性</span>と<span class="word audio" data-action="audio" data-audio="audio/dansee.mp3">男性</span>では、ふつう<span class="word audio" data-action="audio" data-audio="audio/jyosee.mp3">女性</span>のほうが<span class="word audio" data-action="audio" data-audio="audio/hukai.mp3">深い</span>おじぎをします。</span>
+<span class="sentence">それから、おじぎは<span class="word audio" data-action="audio" data-audio="audio/chikaku.mp3">近く</span>にいる人だけにするものではありません。</span>
+<span class="sentence"><span class="word audio" data-action="audio" data-audio="audio/tooku.mp3">遠く</span>に知っている人を見て、その人が友だちだったら、<span class="word define" data-action="define" data-key="手をふる">手をふる</span>だけでいいですが、その人が<span class="word audio" data-action="audio" data-audio="audio/meue.mp3">目上</span>の人だったら、<span class="word define" data-action="define" data-key="手をふる">手をふる</span>のではなくて、<span class="word audio" data-action="audio" data-audio="audio/atama.mp3">頭</span>を<span class="word audio" data-action="audio" data-audio="audio/sukoshi.mp3">少し</span><span class="word audio" data-action="audio" data-audio="audio/sageta.mp3">下げた</span>ほうがいいです。</span>
 </p>
 <p>
-その本を読んでから、ミッシェルは『ローマでは、ローマ人がするようにしなさい（<span class="word audio" data-action="audio" data-audio="audio/goo.mp3">郷</span>に<span class="word audio" data-action="audio" data-audio="audio/itte.mp3">入って</span>は<span class="word audio" data-action="audio" data-audio="audio/goo.mp3">郷</span>にしたがえ）When in Rome, do as the Romans do.』という<span class="word define" data-action="define" data-key="ことわざ">ことわざ</span>を<span class="word audio" data-action="audio" data-audio="audio/omoidashite.mp3">思い出して</span>、日本人のようにおじぎをすることにしました。
+<span class="sentence">その本を読んでから、ミッシェルは『ローマでは、ローマ人がするようにしなさい（<span class="word audio" data-action="audio" data-audio="audio/goo.mp3">郷</span>に<span class="word audio" data-action="audio" data-audio="audio/itte.mp3">入って</span>は<span class="word audio" data-action="audio" data-audio="audio/goo.mp3">郷</span>にしたがえ）When in Rome, do as the Romans do.』という<span class="word define" data-action="define" data-key="ことわざ">ことわざ</span>を<span class="word audio" data-action="audio" data-audio="audio/omoidashite.mp3">思い出して</span>、日本人のようにおじぎをすることにしました。</span>
 </p>
 
 <div class="controls">
@@ -109,6 +143,182 @@
   </div>
 </div>
 
+<div id="truefalse-section">
+
+   <!-- Example TRUE/FALSE Item -->
+  <div class="tf-question"
+       data-answer="true"
+       data-explanation="３文目をもう一度読みましょう(re-read the 3rd sentence of the passage)。"
+       data-explanation-video="videos/exp1.mp4"
+       data-translation="The custom that Michelle thinks is most interesting is bowing.">
+
+    <p>1. ミッシェルは、日本のいろいろな習慣の中で、おじぎが一番おもしろいと思っている。</p>
+
+    <!-- Choices -->
+    <button onclick="checkTF(this, true)">○</button>
+    <button onclick="checkTF(this, false)">×</button>
+
+    <!-- Feedback -->
+    <span class="tf-result"></span>
+
+    <!-- Explanation button (hidden until answered) -->
+    <button class="tf-detail-btn" style="display:none;" onclick="toggleDetail(this)">
+      説明（せつめい）
+    </button>
+
+    <!-- Explanation image area (hidden until shown) -->
+    <div class="tf-detail" style="display:none;">
+      <video class="tf-video" controls style="max-width: 100%; margin-top: 10px; display:none;">
+  Your browser does not support the video tag.
+</video>
+      <button class="tf-translation-btn" onclick="toggleTranslation(this)" style="display:none; margin-top: 8px;">
+        英訳（えいやく）
+      </button>
+      <div class="tf-translation" style="display:none; margin-top: 8px;"></div>
+    </div>
+
+<div class="tf-question"
+       data-answer="false"
+       data-explanation="４文目をもう一度読みましょう(re-read the 4th sentence of the passage)。"
+       data-explanation-video="videos/exp2.mp4"
+       data-translation="Although there are no situations where family members bow to each other, if a guest comes to the front door, they bow.">
+
+    <p>2. 日本では、家族どうしもおじぎをすることになっている。</p>
+    <button onclick="checkTF(this, true)">○</button>
+    <button onclick="checkTF(this, false)">×</button>
+    <span class="tf-result"></span>
+    <button class="tf-detail-btn" style="display:none;" onclick="toggleDetail(this)">
+      説明（せつめい）
+    </button>
+    <div class="tf-detail" style="display:none;">
+      <video class="tf-video" controls style="max-width: 100%; margin-top: 10px; display:none;">
+  Your browser does not support the video tag.
+</video>
+      <button class="tf-translation-btn" onclick="toggleTranslation(this)" style="display:none; margin-top: 8px;">
+        英訳（えいやく）
+      </button>
+      <div class="tf-translation" style="display:none; margin-top: 8px;"></div>
+    </div>
+
+<div class="tf-question"
+       data-answer="true"
+       data-explanation="７文目をもう一度読みましょう(re-read the 7th sentence of the passage)"
+       data-explanation-video="videos/exp3.mp4"
+       data-translation="What is very strange is when a person who is talking on a payphone says things like "Sorry" and "Thank you very much" to the person they are talking to and bows.">
+
+    <p>3. 日本人は、電話で話している時にもおじぎをする。</p>
+    <button onclick="checkTF(this, true)">○</button>
+    <button onclick="checkTF(this, false)">×</button>
+    <span class="tf-result"></span>
+    <button class="tf-detail-btn" style="display:none;" onclick="toggleDetail(this)">
+      説明（せつめい）
+    </button>
+    <div class="tf-detail" style="display:none;">
+      <video class="tf-video" controls style="max-width: 100%; margin-top: 10px; display:none;">
+  Your browser does not support the video tag.
+</video>
+      <button class="tf-translation-btn" onclick="toggleTranslation(this)" style="display:none; margin-top: 8px;">
+        英訳（えいやく）
+      </button>
+      <div class="tf-translation" style="display:none; margin-top: 8px;"></div>
+    </div>
+
+<div class="tf-question"
+       data-answer="true"
+       data-explanation="８文目をもう一度読みましょう(re-read the 8th sentence of the passage)"
+       data-explanation-video="videos/exp4.mp4"
+       data-translation="Michelle thought she wants to know more about bowing, so borrowed a book that explains Japanese people's customs at the university library and tried reading about bowing.">
+
+    <p>4. ミッシェルが日本で勉強している大学の図書館には、日本人の習慣を説明している本がある。</p>
+
+    <button onclick="checkTF(this, true)">○</button>
+    <button onclick="checkTF(this, false)">×</button>
+    <span class="tf-result"></span>
+    <button class="tf-detail-btn" style="display:none;" onclick="toggleDetail(this)">
+      説明（せつめい）
+    </button>
+    <div class="tf-detail" style="display:none;">
+      <video class="tf-video" controls style="max-width: 100%; margin-top: 10px; display:none;">
+  Your browser does not support the video tag.
+</video>
+      <button class="tf-translation-btn" onclick="toggleTranslation(this)" style="display:none; margin-top: 8px;">
+        英訳（えいやく）
+      </button>
+      <div class="tf-translation" style="display:none; margin-top: 8px;"></div>
+    </div>
+
+<div class="tf-question"
+       data-answer="true"
+       data-explanation="１０文目をもう一度読みましょう(re-read the 10th sentence of the passage)"
+       data-explanation-video="videos/exp5.mp4"
+       data-translation="First of all, when a person of higher and lower social status meet, the person of lower status must bow lower.">
+
+    <p>5. 目上の人と目下の人では、おじぎのしかた(way/manner)がちがう。</p>
+
+    <button onclick="checkTF(this, true)">○</button>
+    <button onclick="checkTF(this, false)">×</button>
+    <span class="tf-result"></span>
+    <button class="tf-detail-btn" style="display:none;" onclick="toggleDetail(this)">
+      説明（せつめい）
+    </button>
+    <div class="tf-detail" style="display:none;">
+      <video class="tf-video" controls style="max-width: 100%; margin-top: 10px; display:none;">
+  Your browser does not support the video tag.
+</video>
+      <button class="tf-translation-btn" onclick="toggleTranslation(this)" style="display:none; margin-top: 8px;">
+        英訳（えいやく）
+      </button>
+      <div class="tf-translation" style="display:none; margin-top: 8px;"></div>
+    </div>
+
+<div class="tf-question"
+       data-answer="false"
+       data-explanation="１３文目をもう一度読みましょう(re-read the 13th sentence of the passage)"
+       data-explanation-video="videos/exp6.mp4"
+       data-translation="Seeing someone you know afar, if they are a friend just waving is fine, but if that person is someone of higher status, you should lower your head a little instead of waving.">
+
+    <p>6. 遠くにいる目上の人には、手をふるだけでいい。</p>
+
+    <button onclick="checkTF(this, true)">○</button>
+    <button onclick="checkTF(this, false)">×</button>
+    <span class="tf-result"></span>
+    <button class="tf-detail-btn" style="display:none;" onclick="toggleDetail(this)">
+      説明（せつめい）
+    </button>
+    <div class="tf-detail" style="display:none;">
+      <video class="tf-video" controls style="max-width: 100%; margin-top: 10px; display:none;">
+  Your browser does not support the video tag.
+</video>
+      <button class="tf-translation-btn" onclick="toggleTranslation(this)" style="display:none; margin-top: 8px;">
+        英訳（えいやく）
+      </button>
+      <div class="tf-translation" style="display:none; margin-top: 8px;"></div>
+    </div>
+
+<div class="tf-question"
+       data-answer="false"
+       data-explanation="１４文目をもう一度読みましょう(re-read the 14th sentence of the passage)"
+       data-explanation-video="videos/exp7.mp4"
+       data-translation="After reading that book, Michelle remembered the proverb "When in Rome, do as the Romans do" and decided to bow like Japanese people.">
+
+    <p>7. ミッシェルは、今日本に住んでいるが、アメリカ人なので、日本人のようなおじぎはしないつもりだ。</p>
+
+    <button onclick="checkTF(this, true)">○</button>
+    <button onclick="checkTF(this, false)">×</button>
+    <span class="tf-result"></span>
+    <button class="tf-detail-btn" style="display:none;" onclick="toggleDetail(this)">
+      説明（せつめい）
+    </button>
+    <div class="tf-detail" style="display:none;">
+      <video class="tf-video" controls style="max-width: 100%; margin-top: 10px; display:none;">
+  Your browser does not support the video tag.
+</video>
+      <button class="tf-translation-btn" onclick="toggleTranslation(this)" style="display:none; margin-top: 8px;">
+        英訳（えいやく）
+      </button>
+      <div class="tf-translation" style="display:none; margin-top: 8px;"></div>
+    </div>
+  
 <hr>
 <h3>1. 漢字読み方クイズ（かんじよみかたクイズ）</h3>
 
@@ -309,6 +519,49 @@
 </div>
 
 <script>
+function checkTF(button, userChoice) {
+  const container = button.closest(".tf-question");
+  const correctAnswer = container.dataset.answer === "true";
+  const explanation = container.dataset.explanation;
+  const videoPath = container.dataset.explanationVideo;
+  const translation = container.dataset.translation;
+
+  const resultSpan = container.querySelector(".tf-result");
+  const detailBtn = container.querySelector(".tf-detail-btn");
+  const detailBox = container.querySelector(".tf-detail");
+  const videoBox = container.querySelector(".tf-video");
+  const translationBtn = container.querySelector(".tf-translation-btn");
+  const translationBox = container.querySelector(".tf-translation");
+
+  // Reset
+  translationBox.style.display = "none";
+  translationBtn.style.display = "none";
+  videoBox.style.display = "none";
+
+  // Correct / incorrect feedback
+  if (userChoice === correctAnswer) {
+    resultSpan.textContent = "✅ 正解（せいかい）(correct)";
+    resultSpan.style.color = "green";
+  } else {
+    resultSpan.textContent = `❌ 不正解（ふせいかい）(incorrect): ${explanation}`;
+    resultSpan.style.color = "red";
+  }
+
+  // Set video source
+  if (videoPath) {
+    videoBox.src = videoPath;
+  }
+
+  // Set translation text
+  translationBox.textContent = translation;
+
+  // Show 説明 button
+  detailBtn.style.display = "inline-block";
+
+  // Hide detail area if previously opened
+  detailBox.style.display = "none";
+}
+  
 function checkAnswer(inputId, correctAnswer) {
   const userInput = document.getElementById(inputId).value.trim();
   const resultSpan = document.getElementById("result-" + inputId);
