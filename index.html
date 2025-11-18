@@ -97,6 +97,21 @@
 body {
   counter-reset: sentence-counter;
 }
+.sentence {
+  position: relative;
+  padding-left: 12px;      /* for the number */
+  display: inline;         /* inline instead of inline-block → no gaps */
+  counter-increment: sentence-counter;
+}
+
+.sentence::before {
+  content: counter(sentence-counter);
+  font-size: 0.6em;
+  color: #555;
+  position: absolute;
+  left: 0px;
+  top: -0.7em;
+}
 </style>
 </head>
 <body>
@@ -107,7 +122,7 @@ body {
 1. 次の文章（ぶんしょう）を読んで、下の１）〜７）の中から正（ただ）しい（correct）ものを選（えら）んでください。
 </div>
   
-<p>
+<p id="reading-text">
   <!-- Examples: specify action + (for audio) data-audio + (for define) data-key -->
 <span class="sentence">ミッシェルは、今日本に<span class="word audio" data-action="audio" data-audio="audio/ryuugaku.mp3">留学</span>しています。</span>
 <span class="sentence">ホームステイをしていて、毎日<span class="word audio" data-action="audio" data-audio="audio/densha.mp3">電車</span>で大学に行っているので、日本のいろいろな<span class="word audio" data-action="audio" data-audio="audio/shyuukan.mp3">習慣</span>がわかってきました。</span>
