@@ -77,24 +77,7 @@
   font-weight: bold;
 }
 
-  .sentence {
-  position: relative;
-  padding-left: 12px; /* small space for the number */
-  display: inline-block; /* allows relative positioning */
-  margin-right: 6px; /* spacing between sentences */
-  counter-increment: sentence-counter;
-}
-
-.sentence::before {
-  content: counter(sentence-counter);
-  font-size: 0.6em;
-  position: absolute;
-  left: 0px;
-  top: -0.6em; /* moves number above the first character */
-  color: #555;
-}
-
-body {
+#reading-text {
   counter-reset: sentence-counter;
 }
 .sentence {
