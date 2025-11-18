@@ -556,7 +556,21 @@ function checkTF(button, userChoice) {
   // Hide detail area if previously opened
   detailBox.style.display = "none";
 }
-  
+
+  function toggleDetail(button) {
+  const container = button.closest(".tf-question");
+  const detailBox = container.querySelector(".tf-detail");
+  const videoBox = container.querySelector(".tf-video");
+  const translationBtn = container.querySelector(".tf-translation-btn");
+
+  if (detailBox.style.display === "none") {
+    detailBox.style.display = "block";
+    videoBox.style.display = "block";          // ← REQUIRED
+    translationBtn.style.display = "block";
+  } else {
+    detailBox.style.display = "none";
+  }
+}
 function checkAnswer(inputId, correctAnswer) {
   const userInput = document.getElementById(inputId).value.trim();
   const resultSpan = document.getElementById("result-" + inputId);
