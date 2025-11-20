@@ -119,7 +119,7 @@
 <span class="sentence">ミッシェルは、おじぎのことをもっとよく知りたいと思って、大学の<span class="word audio" data-action="audio" data-audio="audio/toshokan.mp3">図書館</span>で日本人の<span class="word audio" data-action="audio" data-audio="audio/shyuukan.mp3">習慣</span>を<span class="word audio" data-action="audio" data-audio="audio/setsumee.mp3">説明</span>している本を<span class="word audio" data-action="audio" data-audio="audio/karite.mp3">借りて</span>、おじぎについて読んでみました。</span>
 <span class="sentence">本を読んで、<span class="word audio" data-action="audio" data-audio="audio/tsugi.mp3">次</span>のことがわかりました。</span>
 <span class="sentence">まず、<span class="word audio" data-action="audio" data-audio="audio/meue.mp3">目上</span>の人と<span class="word audio" data-action="audio" data-audio="audio/meshita.mp3">目下</span>の人が<span class="word audio" data-action="audio" data-audio="audio/atta.mp3">会った</span>時、<span class="word audio" data-action="audio" data-audio="audio/meshita.mp3">目下</span>の人のほうが<span class="word audio" data-action="audio" data-audio="audio/hukai.mp3">深い</span>おじぎをしなくてはいけません。</span>
-お<span class="sentence"><span class="word audio" data-action="audio" data-audio="audio/mise.mp3">店</span>の<span class="sentence"><span class="word audio" data-action="audio" data-audio="audio/tenin.mp3">店員</span>やレストランの<span class="word define" data-action="define" data-key="ホールスタッフ">ホールスタッフ</span>もお<span class="sentence"><span class="word audio" data-action="audio" data-audio="audio/kyaku.mp3">客</span>さんに<span class="sentence"><span class="word audio" data-action="audio" data-audio="audio/hukai.mp3">深い</span>おじぎをしなくてはいけません。
+<span class="sentence">お<span class="word audio" data-action="audio" data-audio="audio/mise.mp3">店</span>の<span class="word audio" data-action="audio" data-audio="audio/tenin.mp3">店員</span>やレストランの<span class="word define" data-action="define" data-key="ホールスタッフ">ホールスタッフ</span>もお<span class="word audio" data-action="audio" data-audio="audio/kyaku.mp3">客</span>さんに<span class="word audio" data-action="audio" data-audio="audio/hukai.mp3">深い</span>おじぎをしなくてはいけません。
 <span class="sentence">それから、おじぎは<span class="word audio" data-action="audio" data-audio="audio/chikaku.mp3">近く</span>にいる人だけにするものではありません。</span>
 <span class="sentence"><span class="word audio" data-action="audio" data-audio="audio/tooku.mp3">遠く</span>に知っている人を見て、その人が友だちだったら、<span class="word define" data-action="define" data-key="手をふる">手をふる</span>だけでいいですが、その人が<span class="word audio" data-action="audio" data-audio="audio/meue.mp3">目上</span>の人だったら、<span class="word define" data-action="define" data-key="手をふる">手をふる</span>のではなくて、<span class="word audio" data-action="audio" data-audio="audio/atama.mp3">頭</span>を<span class="word audio" data-action="audio" data-audio="audio/sukoshi.mp3">少し</span><span class="word audio" data-action="audio" data-audio="audio/sageta.mp3">下げた</span>ほうがいいです。</span>
 </p>
@@ -141,9 +141,51 @@
   </div>
 </div>
 
-<div id="truefalse-section">
+<div id="mc-question">
 
    <!-- Example TRUE/FALSE Item -->
+  <div class="mc-question"
+     data-answer="B,C" 
+     data-passage-id="sentence5"
+     data-explanation-video="videos/ex1.mp4"
+     data-translation="People bow to the person they are speaking to on the phone.">
+
+  <p>1. 文の内容として正しいものをすべて選びなさい。</p>
+
+  <div class="choices">
+    <button onclick="checkMC(this, 'A')">A. 日本の電車では大声で話すのが普通である。</button>
+    <button onclick="checkMC(this, 'B')">B. 電話で話すときは小声で話す。</button>
+    <button onclick="checkMC(this, 'C')">C. 電話をしながらおじぎをする人がいる。</button>
+    <button onclick="checkMC(this, 'D')">D. 電車内で食事をするのが一般的である。</button>
+  </div>
+
+  <!-- Feedback area -->
+  <span class="mc-result"></span>
+
+  <!-- 説明 button -->
+  <button class="mc-detail-btn"
+          style="display:none;"
+          onclick="toggleMCDetail(this)">
+    説明（せつめい）
+  </button>
+
+  <!-- Detail section: video + translation -->
+  <div class="mc-detail" style="display:none;">
+    <video class="mc-video" controls
+           style="max-width:100%; margin-top:10px; display:none;"></video>
+
+    <button class="mc-translation-btn"
+            style="display:none; margin-top:8px;"
+            onclick="toggleMCTranslation(this)">
+      英訳（えいやく）
+    </button>
+
+    <div class="mc-translation"
+         style="display:none; margin-top:8px;"></div>
+  </div>
+
+</div>
+
   <div class="tf-question"
        data-answer="true"
        data-explanation="３文目をもう一度読みましょう(re-read the 3rd sentence of the passage)。"
