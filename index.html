@@ -102,7 +102,7 @@
 <h2>おじぎ</h2>
 
 <div class="instructions">
-1. 次の文章（ぶんしょう）を読んで、下の１）〜７）の中から正（ただ）しい（correct）ものを選（えら）んでください。
+1. 次の文章（ぶんしょう）を読んで、空欄（くうらん; blank）に入る正しい（ただしい; correct）ものを全部（ぜんぶ; all）選んで（えらんで; choose）ください。
 </div>
   
 <p id="reading-text">
@@ -142,230 +142,263 @@
 </div>
 
 <div id="mc-question">
+ <div class="mc-question"
+     data-hint="４、５、６、７、１２、１３文目を読みましょう！">
 
-   <!-- Example TRUE/FALSE Item -->
-  <div class="mc-question"
-     data-answer="B,C" 
-     data-passage-id="sentence5"
-     data-explanation-video="videos/ex1.mp4"
-     data-translation="People bow to the person they are speaking to on the phone.">
+  <div class="mc-header">
+    <p class="mc-qtext">1) 日本人は、＿＿＿＿＿＿＿におじぎをします。</p>
 
-  <p>1. 文の内容として正しいものをすべて選びなさい。</p>
+    <!-- Light bulb hint button -->
+    <button class="hint-btn" onclick="showHint(this)">💡</button>
+  </div>
+
+  <div class="hint-box" style="display:none;"></div>
 
   <div class="choices">
-    <button onclick="checkMC(this, 'A')">A. 日本の電車では大声で話すのが普通である。</button>
-    <button onclick="checkMC(this, 'B')">B. 電話で話すときは小声で話す。</button>
-    <button onclick="checkMC(this, 'C')">C. 電話をしながらおじぎをする人がいる。</button>
-    <button onclick="checkMC(this, 'D')">D. 電車内で食事をするのが一般的である。</button>
+
+    <button class="mc-option"
+            data-option="A"
+            data-correct="true">
+      A. 家族
+    </button>
+
+    <button class="mc-option"
+            data-option="B"
+            data-correct="false"
+            data-feedback1="❌　不正解（ふせいかい） - ４文目をもう一度読みましょう(re-read sentence 4)！"
+            data-feedback2="ヒント：Review the sentence structures 「Aが、B」and「Aたら、B」."
+            data-video="videos/explain1-B.mp4">
+      B. お客さん
+    </button>
+
+    <button class="mc-option"
+            data-option="C"
+            data-correct="true">
+      C. 友だち
+    </button>
+
+    <button class="mc-option"
+            data-option="D"
+            data-correct="false"
+            data-feedback1="❌　不正解（ふせいかい） - ６文目をもう一度読みましょう(re-read sentence 6)！"
+            data-feedback2="ヒント：Bear in mind the most basic sentence structure「Topicは、Commentです」. What is the topic and comment in this sentence?"
+            data-video="videos/explain1-D.mp4">
+      D. 先生
+    </button>
+
+    <button class="mc-option"
+            data-option="E"
+            data-correct="false"
+            data-feedback1="❌　不正解（ふせいかい） - ７文目をもう一度読みましょう(re-read sentence 7)！"
+            data-feedback2="ヒント：What is the main sentence within this sentence (「Topicは、Commentです」)? What role does the rest of the sentence play?"
+            data-video="videos/explain1-E.mp4">
+      E. 電話で話している相手
+    </button>
+
+    <button class="mc-option"
+            data-option="F"
+            data-correct="false"
+            data-feedback1="❌　不正解（ふせいかい） - ５文目をもう一度読みましょう(re-read sentence 5)！"
+            data-feedback2="ヒント：In the sentence structure「A時、B (When A, B)」, A describes the context in which B occurs."
+            data-video="videos/explain1-F.mp4">
+      F. 近所の人
+    </button>
+
+    <button class="mc-option"
+            data-option="G"
+            data-correct="false"
+            data-feedback1="❌　不正解（ふせいかい） - １３文目をもう一度読みましょう(re-read sentence 13)！"
+            data-feedback2="ヒント：Review the sentence structure「Aが、B」. In each contrastive situation A and B, there are also「Aたら、B」clauses indicating the context 'When/If A, B'."
+            data-video="videos/explain1-G.mp4">
+      G. 遠くにいる人
+    </button>
+
+    <button class="mc-option"
+            data-option="H"
+            data-correct="false"
+            data-feedback1="❌　不正解（ふせいかい） - １２文目をもう一度読みましょう(re-read sentence 12)！"
+            data-feedback2="ヒント：Try to understand the sentence in the affirmative form first（おじぎは近くにいる人だけにするものです）, then negate it."
+            data-video="videos/explain1-H.mp4">
+      H. 近くにいる人
+    </button>
   </div>
 
-  <!-- Feedback area -->
-  <span class="mc-result"></span>
+  <!-- Result area -->
+  <div class="mc-stage1" style="display:none;"></div>
 
-  <!-- 説明 button -->
-  <button class="mc-detail-btn"
+  <!-- Hint stage 1 button -->
+  <button class="mc-hint1-btn"
           style="display:none;"
-          onclick="toggleMCDetail(this)">
-    説明（せつめい）
+          onclick="showHintStage2(this)">
+    ヒント１
   </button>
 
-  <!-- Detail section: video + translation -->
-  <div class="mc-detail" style="display:none;">
-    <video class="mc-video" controls
-           style="max-width:100%; margin-top:10px; display:none;"></video>
+  <!-- Second feedback stage -->
+  <div class="mc-stage2" style="display:none;"></div>
 
-    <button class="mc-translation-btn"
-            style="display:none; margin-top:8px;"
-            onclick="toggleMCTranslation(this)">
-      英訳（えいやく）
-    </button>
+  <!-- Hint stage 2 button -->
+  <button class="mc-hint2-btn"
+          style="display:none;"
+          onclick="showHintStage3(this)">
+    ヒント２
+  </button>
 
-    <div class="mc-translation"
-         style="display:none; margin-top:8px;"></div>
-  </div>
-
-</div>
-
-  <div class="tf-question"
-       data-answer="true"
-       data-explanation="３文目をもう一度読みましょう(re-read the 3rd sentence of the passage)。"
-       data-explanation-video="videos/exp1.mp4"
-       data-translation="The custom that Michelle thinks is most interesting is bowing.">
-
-    <p>1. ミッシェルは、日本のいろいろな習慣の中で、おじぎが一番おもしろいと思っている。</p>
-
-    <!-- Choices -->
-    <button onclick="checkTF(this, true)">○</button>
-    <button onclick="checkTF(this, false)">×</button>
-
-    <!-- Feedback -->
-    <span class="tf-result"></span>
-
-    <!-- Explanation button (hidden until answered) -->
-    <button class="tf-detail-btn" style="display:none;" onclick="toggleDetail(this)">
-      説明（せつめい）
-    </button>
-
-    <!-- Explanation image area (hidden until shown) -->
-    <div class="tf-detail" style="display:none;">
-      <video class="tf-video" controls style="max-width: 100%; margin-top: 10px; display:none;"></video>
-      <button class="tf-translation-btn" onclick="toggleTranslation(this)" style="display:none; margin-top: 8px;">英訳（えいやく）</button>
-      <div class="tf-translation" style="display:none; margin-top: 8px;">
-         The custom that Michelle thinks is most interesting is bowing.
-    </div>
+  <!-- Video stage -->
+  <div class="mc-stage3" style="display:none;">
+    <video class="mc-video" controls style="max-width:100%; margin-top:10px;"></video>
   </div>
 </div>
 
-<div class="tf-question"
-       data-answer="false"
-       data-explanation="４文目をもう一度読みましょう(re-read the 4th sentence of the passage)。"
-       data-explanation-video="videos/exp2.mp4"
-       data-translation="Although there are no situations where family members bow to each other, if a guest comes to the front door, they bow.">
+  
+ <div class="mc-question"
+     data-hint="８文目を読みましょう！">
 
-    <p>2. 日本では、家族どうしもおじぎをすることになっている。</p>
-    <button onclick="checkTF(this, true)">○</button>
-    <button onclick="checkTF(this, false)">×</button>
-    <span class="tf-result"></span>
-    <button class="tf-detail-btn" style="display:none;" onclick="toggleDetail(this)">
-      説明（せつめい）
+  <div class="mc-header">
+    <p class="mc-qtext">2) ミッシェルは、＿＿＿＿＿＿＿から(reason)、おじぎの本を読みました。</p>
+
+    <!-- Light bulb hint button -->
+    <button class="hint-btn" onclick="showHint(this)">💡</button>
+  </div>
+
+  <div class="hint-box" style="display:none;"></div>
+
+  <div class="choices">
+
+    <button class="mc-option"
+            data-option="A"
+            data-correct="false"
+            data-feedback1="❌　不正解（ふせいかい） - ８文目をもう一度読みましょう(re-read sentence 8)！"
+            data-feedback2="ヒント：Go over the Kanji used in the sentence - is 宿題 there?"
+            data-video="videos/explain2.mp4">
+      A. 宿題
     </button>
-    <div class="tf-detail" style="display:none;">
-      <video class="tf-video" controls style="max-width: 100%; margin-top: 10px; display:none;">
-  Your browser does not support the video tag.
-</video>
-      <button class="tf-translation-btn" onclick="toggleTranslation(this)" style="display:none; margin-top: 8px;">
-        英訳（えいやく）
-      </button>
-      <div class="tf-translation" style="display:none; margin-top: 8px;"></div>
-    </div>
+
+    <button class="mc-option"
+            data-option="B"
+            data-correct="false"
+            data-feedback1="❌　不正解（ふせいかい） - ８文目をもう一度読みましょう(re-read sentence 8)！"
+            data-feedback2="ヒント：Did she borrow the book from a specific person or a place?"
+            data-video="videos/explain2.mp4">
+      B. 友だちに本を借りた
+    </button>
+
+    <button class="mc-option"
+            data-option="C"
+            data-correct="true">
+      C. おじぎについて知りたい
+    </button>
+  </div>
+
+  <!-- Result area -->
+  <div class="mc-stage1" style="display:none;"></div>
+
+  <!-- Hint stage 1 button -->
+  <button class="mc-hint1-btn"
+          style="display:none;"
+          onclick="showHintStage2(this)">
+    ヒント１
+  </button>
+
+  <!-- Second feedback stage -->
+  <div class="mc-stage2" style="display:none;"></div>
+
+  <!-- Hint stage 2 button -->
+  <button class="mc-hint2-btn"
+          style="display:none;"
+          onclick="showHintStage3(this)">
+    ヒント２
+  </button>
+
+  <!-- Video stage -->
+  <div class="mc-stage3" style="display:none;">
+    <video class="mc-video" controls style="max-width:100%; margin-top:10px;"></video>
+  </div>
 </div>
 
-<div class="tf-question"
-       data-answer="true"
-       data-explanation="７文目をもう一度読みましょう(re-read the 7th sentence of the passage)"
-       data-explanation-video="videos/exp3.mp4"
-       data-translation="The very strange thing is when a person who is talking on a payphone says things like I'm sorry and Thank you very much to the person they are talking to and bows.">
+ <div class="mc-question"
+     data-hint="１０、１１文目を読みましょう！">
 
-    <p>3. 日本人は、電話で話している時にもおじぎをする。</p>
-    <button onclick="checkTF(this, true)">○</button>
-    <button onclick="checkTF(this, false)">×</button>
-    <span class="tf-result"></span>
-    <button class="tf-detail-btn" style="display:none;" onclick="toggleDetail(this)">
-      説明（せつめい）
+  <div class="mc-header">
+    <p class="mc-qtext">3) ＿＿＿＿＿は、＿＿＿＿＿に深いおじぎをしなくてはいけません。</p>
+
+    <!-- Light bulb hint button -->
+    <button class="hint-btn" onclick="showHint(this)">💡</button>
+  </div>
+
+  <div class="hint-box" style="display:none;"></div>
+
+  <div class="choices">
+
+    <button class="mc-option"
+            data-option="A"
+            data-correct="false"
+            data-feedback1="❌　不正解（ふせいかい） - １０文目をもう一度読みましょう(re-read sentence 10)！"
+            data-feedback2="ヒント：In the sentence structure「A時、B (When A, B)」, A describes the context in which B occurs."
+            data-video="videos/explain3-A.mp4">
+      A. 目上の人は　目下の人に
     </button>
-    <div class="tf-detail" style="display:none;">
-      <video class="tf-video" controls style="max-width: 100%; margin-top: 10px; display:none;">
-  Your browser does not support the video tag.
-</video>
-      <button class="tf-translation-btn" onclick="toggleTranslation(this)" style="display:none; margin-top: 8px;">
-        英訳（えいやく）
-      </button>
-      <div class="tf-translation" style="display:none; margin-top: 8px;">
-         Although there are no situations where family members bow to each other, if a guest comes to the front door, they bow.
-      </div>
-    </div>
-</div>
 
-<div class="tf-question"
-       data-answer="true"
-       data-explanation="８文目をもう一度読みましょう(re-read the 8th sentence of the passage)"
-       data-explanation-video="videos/exp4.mp4"
-       data-translation="Michelle thought she wants to know more about bowing, so borrowed a book that explains Japanese people's customs at the university library and tried reading about bowing.">
-
-    <p>4. ミッシェルが日本で勉強している大学の図書館には、日本人の習慣を説明している本がある。</p>
-
-    <button onclick="checkTF(this, true)">○</button>
-    <button onclick="checkTF(this, false)">×</button>
-    <span class="tf-result"></span>
-    <button class="tf-detail-btn" style="display:none;" onclick="toggleDetail(this)">
-      説明（せつめい）
+    <button class="mc-option"
+            data-option="B"
+            data-correct="true">
+      B. 目下の人は　目上の人に
     </button>
-    <div class="tf-detail" style="display:none;">
-      <video class="tf-video" controls style="max-width: 100%; margin-top: 10px; display:none;">
-  Your browser does not support the video tag.
-</video>
-      <button class="tf-translation-btn" onclick="toggleTranslation(this)" style="display:none; margin-top: 8px;">
-        英訳（えいやく）
-      </button>
-      <div class="tf-translation" style="display:none; margin-top: 8px;">
-        Michelle thought she wants to know more about bowing, so borrowed a book that explains Japanese people's customs at the university library and tried reading about bowing.
-      </div>
-    </div>
-</div>
 
-<div class="tf-question"
-       data-answer="true"
-       data-explanation="１０文目をもう一度読みましょう(re-read the 10th sentence of the passage)"
-       data-explanation-video="videos/exp5.mp4"
-       data-translation="First of all, when a person of higher and lower social status meet, the person of lower status must bow lower.">
-
-    <p>5. 目上の人と目下の人では、おじぎのしかた(way/manner)がちがう。</p>
-
-    <button onclick="checkTF(this, true)">○</button>
-    <button onclick="checkTF(this, false)">×</button>
-    <span class="tf-result"></span>
-    <button class="tf-detail-btn" style="display:none;" onclick="toggleDetail(this)">
-      説明（せつめい）
+    <button class="mc-option"
+            data-option="C"
+            data-correct="true">
+      C. 店員は　お客さんに
     </button>
-    <div class="tf-detail" style="display:none;">
-      <video class="tf-video" controls style="max-width: 100%; margin-top: 10px; display:none;">
-  Your browser does not support the video tag.
-</video>
-      <button class="tf-translation-btn" onclick="toggleTranslation(this)" style="display:none; margin-top: 8px;">
-        英訳（えいやく）
-      </button>
-      <div class="tf-translation" style="display:none; margin-top: 8px;"></div>
-    </div>
-</div>
 
-<div class="tf-question"
-       data-answer="false"
-       data-explanation="１３文目をもう一度読みましょう(re-read the 13th sentence of the passage)"
-       data-explanation-video="videos/exp6.mp4"
-       data-translation="Seeing someone you know afar, if they are a friend just waving is fine, but if that person is someone of higher status, you should lower your head a little instead of waving.">
-
-    <p>6. 遠くにいる目上の人には、手をふるだけでいい。</p>
-
-    <button onclick="checkTF(this, true)">○</button>
-    <button onclick="checkTF(this, false)">×</button>
-    <span class="tf-result"></span>
-    <button class="tf-detail-btn" style="display:none;" onclick="toggleDetail(this)">
-      説明（せつめい）
+    <button class="mc-option"
+            data-option="D"
+            data-correct="false"
+            data-feedback1="❌　不正解（ふせいかい） - １１文目をもう一度読みましょう(re-read sentence 11)！"
+            data-feedback2="ヒント：What is the topic of the sentence? Remember that も replaces は when what follows (i.e., the comment) overlaps with the previous statement (e.g., 私はすしが好きです。先生もすしが好きです。)"
+            data-video="videos/explain3-D.mp4">
+      D. お客さんは　店員に
     </button>
-    <div class="tf-detail" style="display:none;">
-      <video class="tf-video" controls style="max-width: 100%; margin-top: 10px; display:none;">
-  Your browser does not support the video tag.
-</video>
-      <button class="tf-translation-btn" onclick="toggleTranslation(this)" style="display:none; margin-top: 8px;">
-        英訳（えいやく）
-      </button>
-      <div class="tf-translation" style="display:none; margin-top: 8px;"></div>
-    </div>
-</div>
 
-<div class="tf-question"
-       data-answer="false"
-       data-explanation="１４文目をもう一度読みましょう(re-read the 14th sentence of the passage)"
-       data-explanation-video="videos/exp7.mp4"
-       data-translation="After reading that book, Michelle remembered the proverb "When in Rome, do as the Romans do" and decided to bow like Japanese people.">
-
-    <p>7. ミッシェルは、今日本に住んでいるが、アメリカ人なので、日本人のようなおじぎはしないつもりだ。</p>
-
-    <button onclick="checkTF(this, true)">○</button>
-    <button onclick="checkTF(this, false)">×</button>
-    <span class="tf-result"></span>
-    <button class="tf-detail-btn" style="display:none;" onclick="toggleDetail(this)">
-      説明（せつめい）
+    <button class="mc-option"
+            data-option="E"
+            data-correct="true">
+      E. ホールスタッフは　お客さんに
     </button>
-    <div class="tf-detail" style="display:none;">
-      <video class="tf-video" controls style="max-width: 100%; margin-top: 10px; display:none;">
-  Your browser does not support the video tag.
-</video>
-      <button class="tf-translation-btn" onclick="toggleTranslation(this)" style="display:none; margin-top: 8px;">
-        英訳（えいやく）
-      </button>
-      <div class="tf-translation" style="display:none; margin-top: 8px;"></div>
-    </div>
+
+    <button class="mc-option"
+            data-option="F"
+            data-correct="false"
+            data-feedback1="❌　不正解（ふせいかい） - １１文目をもう一度読みましょう(re-read sentence 11)！"
+            data-feedback2="ヒント：What is the topic of the sentence? Remember that も replaces は when what follows (i.e., the comment) overlaps with the previous statement (e.g., 私はすしが好きです。先生もすしが好きです。)"
+            data-video="videos/explain3-D.mp4">
+      F. お客さんは　ホールスタッフに
+    </button>
+  </div>
+
+  <!-- Result area -->
+  <div class="mc-stage1" style="display:none;"></div>
+
+  <!-- Hint stage 1 button -->
+  <button class="mc-hint1-btn"
+          style="display:none;"
+          onclick="showHintStage2(this)">
+    ヒント１
+  </button>
+
+  <!-- Second feedback stage -->
+  <div class="mc-stage2" style="display:none;"></div>
+
+  <!-- Hint stage 2 button -->
+  <button class="mc-hint2-btn"
+          style="display:none;"
+          onclick="showHintStage3(this)">
+    ヒント２
+  </button>
+
+  <!-- Video stage -->
+  <div class="mc-stage3" style="display:none;">
+    <video class="mc-video" controls style="max-width:100%; margin-top:10px;"></video>
+  </div>
 </div>
   
 <div class="instructions">
@@ -572,81 +605,83 @@
 </div>
 
 <script>
-function checkTF(button, userChoice) {
-  const container = button.closest(".tf-question");
-  const correctAnswer = container.dataset.answer === "true";
-  const explanation = container.dataset.explanation;
-  const videoPath = container.dataset.explanationVideo;
-  const translation = container.dataset.translation;
-
-  const resultSpan = container.querySelector(".tf-result");
-  const detailBtn = container.querySelector(".tf-detail-btn");
-  const detailBox = container.querySelector(".tf-detail");
-  const videoBox = container.querySelector(".tf-video");
-  const translationBtn = container.querySelector(".tf-translation-btn");
-  const translationBox = container.querySelector(".tf-translation");
-
-  // Reset
-  translationBox.style.display = "none";
-  translationBtn.style.display = "none";
-  videoBox.style.display = "none";
-
-  // Correct / incorrect feedback
-  if (userChoice === correctAnswer) {
-    resultSpan.textContent = "✅ 正解（せいかい）(correct)";
-    resultSpan.style.color = "green";
-  } else {
-    resultSpan.textContent = `❌ 不正解（ふせいかい）(incorrect): ${explanation}`;
-    resultSpan.style.color = "red";
-  }
-
-  // Set video source
-  if (videoPath) {
-    videoBox.src = videoPath;
-  }
-
-  // Set translation text
-  translationBox.textContent = translation;
-
-  // Show 説明 button
-  detailBtn.style.display = "inline-block";
-
-  // Hide detail area if previously opened
-  detailBox.style.display = "none";
-}
-<script>
-function toggleDetail(btn) {
-  const box = btn.closest(".tf-question").querySelector(".tf-detail");
-  box.style.display = box.style.display === "none" ? "block" : "none";
-
-  const video = box.querySelector(".tf-video");
-  if (video && video.src) {
-    video.style.display = "block";
-  }
-  
-  const translationBtn = box.querySelector(".tf-translation-btn");
-  if (translationBtn) translationBtn.style.display = "inline-block";
+function showHint(btn) {
+  const q = btn.closest(".mc-question");
+  const hintBox = q.querySelector(".hint-box");
+  hintBox.textContent = q.dataset.hint;
+  hintBox.style.display = "block";
 }
 
-function toggleTranslation(btn) {
-  const box = btn.closest(".tf-detail").querySelector(".tf-translation");
-  box.style.display = box.style.display === "none" ? "block" : "none";
-}
+function checkMCOption(optionBtn) {
+  const q = optionBtn.closest(".mc-question");
 
-  function toggleDetail(button) {
-  const container = button.closest(".tf-question");
-  const detailBox = container.querySelector(".tf-detail");
-  const videoBox = container.querySelector(".tf-video");
-  const translationBtn = container.querySelector(".tf-translation-btn");
+  const isCorrect = optionBtn.dataset.correct === "true";
+  const feedback1 = optionBtn.dataset.feedback1;
+  const feedback2 = optionBtn.dataset.feedback2;
+  const videoPath = optionBtn.dataset.video;
 
-  if (detailBox.style.display === "none") {
-    detailBox.style.display = "block";
-    videoBox.style.display = "block";          // ← REQUIRED
-    translationBtn.style.display = "block";
-  } else {
-    detailBox.style.display = "none";
+  const stage1 = q.querySelector(".mc-stage1");
+  const stage2 = q.querySelector(".mc-stage2");
+  const stage3 = q.querySelector(".mc-stage3");
+
+  const hint1Btn = q.querySelector(".mc-hint1-btn");
+  const hint2Btn = q.querySelector(".mc-hint2-btn");
+  const videoEl = q.querySelector(".mc-video");
+
+  // Reset stages
+  stage1.style.display = "none";
+  stage2.style.display = "none";
+  stage3.style.display = "none";
+  hint1Btn.style.display = "none";
+  hint2Btn.style.display = "none";
+
+  if (isCorrect) {
+    stage1.textContent = "✅ 正解（せいかい）";
+    stage1.style.color = "green";
+    stage1.style.display = "block";
+    return;
   }
+
+  // Incorrect option → Stage 1 feedback
+  stage1.textContent = feedback1;
+  stage1.style.color = "red";
+  stage1.style.display = "block";
+
+  // Show hint1 button
+  hint1Btn.dataset.feedback2 = feedback2;
+  hint1Btn.dataset.video = videoPath;
+  hint1Btn.style.display = "inline-block";
 }
+
+function showHintStage2(btn) {
+  const q = btn.closest(".mc-question");
+  const stage2 = q.querySelector(".mc-stage2");
+
+  stage2.textContent = btn.dataset.feedback2;
+  stage2.style.display = "block";
+
+  // Set up hint 2 button for stage 3
+  const hint2Btn = q.querySelector(".mc-hint2-btn");
+  hint2Btn.dataset.video = btn.dataset.video;
+  hint2Btn.style.display = "inline-block";
+}
+
+function showHintStage3(btn) {
+  const q = btn.closest(".mc-question");
+  const stage3 = q.querySelector(".mc-stage3");
+  const videoEl = q.querySelector(".mc-video");
+
+  videoEl.src = btn.dataset.video;
+  stage3.style.display = "block";
+}
+
+// Allow all options to trigger checkMCOption
+document.addEventListener("click", function(e) {
+  if (e.target.classList.contains("mc-option")) {
+    checkMCOption(e.target);
+  }
+});
+
 function checkAnswer(inputId, correctAnswer) {
   const userInput = document.getElementById(inputId).value.trim();
   const resultSpan = document.getElementById("result-" + inputId);
