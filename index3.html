@@ -1,0 +1,1549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Interactive Text — audio or definition</title>
+<style>
+  body { font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", "Noto Sans JP", sans-serif; }
+  body { font-family: system-ui, sans-serif; padding: 20px; line-height:1.6; }
+  .word { cursor: pointer; padding: 2px 4px; border-radius: 4px; }
+  .word.audio { color: #0066cc; text-decoration: underline; }
+  .word.define { color: #ff6600; text-decoration: underline dotted; }
+  .word.both { color: #2b7cff; text-decoration: underline; font-weight:600; }
+  .word:focus { outline: 3px solid #aaa; }
+  .playing { background: rgba(43,124,255,0.08); }
+  /* Popup styling */
+  .popup { position: fixed; inset: 0; display: none; align-items:center; justify-content:center; background: rgba(0,0,0,0.45); z-index:1000; }
+  .popup-content { background: white; max-width: 460px; width: 92%; padding: 18px; border-radius: 10px; box-shadow: 0 8px 30px rgba(0,0,0,0.25); text-align:left; position:relative; }
+  .popup img { max-width:100%; height:auto; margin-top:10px; border-radius:6px; display:block; }
+  .close-btn { position:absolute; top:8px; right:10px; font-size:20px; cursor:pointer; border:none; background:transparent; }
+  .controls { margin-top: 12px; color:#444; font-size:0.95rem; }
+#quiz {
+  display: flex;
+  flex-wrap: wrap;          /* allows wrapping onto new lines */
+  justify-content: flex-start;
+  gap: 20px;                /* space between question boxes */
+  margin-top: 30px;
+  padding: 15px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  font-family: "Noto Sans JP", "Yu Gothic", sans-serif;
+}
+
+.question {
+  flex: 1 1 200px;          /* each question box is about 200px wide but flexible */
+  min-width: 180px;
+  max-width: 250px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 12px;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.question label {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.question input {
+  width: 80%;
+  padding: 5px;
+  font-size: 1em;
+  margin-bottom: 8px;
+}
+
+.question button {
+  display: block;           /* puts it below the input */
+  width: 100%;
+  padding: 6px 10px;
+  font-size: 0.9em;
+  border-radius: 5px;
+  background-color: #e6f0ff;
+  border: 1px solid #99bbff;
+  cursor: pointer;
+}
+
+.question button:hover {
+  background-color: #d0e0ff;
+}
+
+.question span {
+  display: block;
+  margin-top: 6px;
+  font-weight: bold;
+}
+
+#reading-text {
+  counter-reset: sentence-counter;
+}
+.sentence {
+  position: relative;
+  padding-left: 12px;      /* for the number */
+  display: inline;         /* inline instead of inline-block → no gaps */
+  counter-increment: sentence-counter;
+}
+
+.sentence::before {
+  content: counter(sentence-counter);
+  font-size: 0.6em;
+  color: #555;
+  position: absolute;
+  left: 0px;
+  top: -0.7em;
+}
+
+  .mc-question {
+  border: 1px solid #ccc;
+  padding: 12px;
+  margin: 15px 0;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.mc-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.hint-btn {
+  font-size: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.hint-box {
+  margin-top: 5px;
+  background: #fff9c4;
+  padding: 6px;
+  border-left: 4px solid #ffeb3b;
+  border-radius: 4px;
+}
+
+.choices button {
+  display: block;
+  width: 250px;
+  text-align: left;
+  margin: 6px 0;
+  padding: 6px;
+  border-radius: 6px;
+}
+
+  .kanji-exercise {
+    margin-top: 40px;
+    padding: 20px;
+    background: #eef5ff;
+    border-radius: 10px;
+  }
+
+  .kx-item {
+    margin-bottom: 28px;
+  }
+
+  .kx-expression {
+    font-size: 1.6em;
+    margin-bottom: 6px;
+  }
+
+  .blank-box {
+    display: inline-block;
+    width: 1em;
+    border-bottom: 2px solid #000;
+    text-align: center;
+    margin: 0 4px;
+    font-size: 1.1em;
+  }
+
+  .reading-input {
+    margin-top: 6px;
+    width: 160px;
+    padding: 4px;
+  }
+
+  .kanji-input {
+    width: 40px;
+    text-align: center;
+    margin: 0 4px;
+    font-size: 1.1em;
+  }
+
+  .kx-result {
+    margin-top: 5px;
+    font-weight: bold;
+  }
+</style>
+<style>
+  .part2-section {
+    margin-top: 40px;
+    background: #eef5ff;
+    padding: 20px;
+    border-radius: 10px;
+  }
+
+  .p2-item {
+    margin-bottom: 35px;
+  }
+
+  .p2-word-block {
+    margin-bottom: 10px;
+  }
+
+  .p2-word {
+    font-size: 1.5em;
+    margin-bottom: 4px;
+  }
+
+  .p2-reading {
+    width: 180px;
+    padding: 4px;
+  }
+
+  .p2-buttons {
+    margin-top: 6px;
+  }
+
+  .p2-buttons button {
+    margin-right: 10px;
+  }
+
+  .p2-explanation {
+    margin-top: 8px;
+    display: none;
+    background: #fff9d8;
+    padding: 10px;
+    border-radius: 6px;
+  }
+
+  .selected-button {
+    background-color: #cce0ff !important;
+  }
+</style>
+<style>
+  .p2-feedback {
+    margin-top: 6px;
+    font-weight: bold;
+  }
+  .correct {
+    color: green;
+  }
+  .incorrect {
+    color: red;
+  }
+  .selected-button {
+    background-color: #cce0ff !important;
+  }
+</style>
+<style>
+  .kanji-bank, .drop-zone {
+    border: 2px dashed #555;
+    padding: 15px;
+    min-height: 90px;
+    background: #fff;
+    border-radius: 8px;
+  }
+
+  .kanji-item {
+    display: inline-block;
+    padding: 8px 14px;
+    margin: 6px;
+    font-size: 1.8em;
+    border: 1px solid #aaa;
+    border-radius: 6px;
+    background: #fafafa;
+    cursor: grab;
+  }
+
+  .drop-zone.highlight {
+    background: #e3f1ff;
+    border-color: #1a73e8;
+  }
+
+  .p3-feedback {
+    margin-top: 4px;
+    font-size: 1.1em;
+    font-weight: bold;
+  }
+
+  .correct { color: green; }
+  .incorrect { color: red; }
+</style>
+<style>
+#part3 {
+    margin-top: 40px;
+    background: #eef5ff;
+    padding: 20px;
+    border-radius: 10px;
+  }
+
+  .kanji-bank, .drop-zone {
+    border: 2px dashed #555;
+    padding: 15px;
+    min-height: 90px;
+    background: #fff;
+    border-radius: 8px;
+  }
+
+  .kanji-item {
+    display: inline-block;
+    padding: 8px 14px;
+    margin: 6px;
+    font-size: 1.8em;
+    border: 1px solid #aaa;
+    border-radius: 6px;
+    background: #fafafa;
+    cursor: grab;
+  }
+
+  .kanji-item.locked {
+    background: #d4ffd4;
+    cursor: default;
+  }
+
+  .drop-zone.highlight {
+    background: #e3f1ff;
+    border-color: #1a73e8;
+  }
+
+  .p3-feedback {
+    margin-top: 4px;
+    font-size: 1.1em;
+    font-weight: bold;
+  }
+
+  .correct { color: green; }
+  .incorrect { color: red; }
+
+.tray, .groups { display: flex; gap: 12px; flex-wrap: wrap; }
+.tray { padding: 10px; border: 2px dashed #ccc; border-radius: 8px; }
+
+.kanji {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 48px; height: 48px; font-size: 28px; cursor: grab;
+  background: #fff; border: 1px solid #aaa; border-radius: 6px;
+}
+
+.dropzone {
+  min-width: 160px; min-height: 90px; padding: 8px;
+  border: 2px dashed #888; border-radius: 8px; background: #f9f9f9;
+}
+.dropzone.over { border-color: #3b82f6; background: #eef5ff; }
+</style>
+<style>
+  body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial; margin: 24px; }
+  h1 { margin-bottom: 8px; }
+  .tray, .zones { display: flex; gap: 12px; flex-wrap: wrap; }
+  .tray { padding: 12px; border: 2px; border-radius: 8px; background: #fdfdfd; margin-bottom: 20px;}
+
+  .kanji {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 80px; height: 40px; padding: 0 10px;
+    font-size: 16px; background: #fff8dc; border: 1px solid #888; border-radius: 8px;
+    cursor: grab; user-select: none; touch-action: none; /* important on mobile */
+  }
+
+  .zone {
+    flex: 1 1 240px; min-height: 120px; padding: 8px;
+    border: 2px dashed #888; border-radius: 10px; background: #f5f7fa; position: relative;
+  }
+  .zone.highlight { border-color: #3b82f6; background: #eaf2ff; }
+  .zone h2 { margin: 0 0 8px; font-size: 18px; }
+  .controls { margin-top: 16px; display: flex; gap: 10px; }
+  .result { margin-top: 12px; font-weight: 600; }
+
+  /* Drag ghost element */
+  .drag-ghost {
+    position: fixed; z-index: 9999; pointer-events: none;
+    min-width: 80px; height: 40px; padding: 0 10px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 16px; background: #fff; border: 1px solid #3b82f6; border-radius: 8px;
+    box-shadow: 0 6px 16px rgba(0,0,0,.2);
+  }
+
+
+/* Incorrect tiles: red highlight */
+.kanji.incorrect {
+  outline: 2px solid #ef4444;          /* red outline */
+  background-color: #ffecec;           /* soft red background (optional) */
+}
+
+/* Optional: correct tiles (green). If you prefer neutral, omit this class entirely. */
+.kanji.correct {
+  outline: 2px solid #22c55e;          /* green outline */
+  background-color: #eaffea;           /* soft green background (optional) */
+}
+</style>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    max-width: 900px;
+    margin: auto;
+    padding: 20px;
+    line-height: 1.6;
+  }
+
+  .image-block {
+    margin-bottom: 30px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+  }
+
+  .image-block img {
+    width: 100%;
+    max-width: 350px;
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  .label {
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+
+  input[type="text"] {
+    width: 95%;
+    padding: 8px;
+    font-size: 1rem;
+    margin-top: 5px;
+    border: 1px solid #aaa;
+    border-radius: 5px;
+  }
+
+  .feedback {
+    margin-top: 8px;
+    font-weight: bold;
+    color: #444;
+  }
+</style>
+</head>
+<body>
+
+<h1>おじぎ</h1>
+<h3>1. 考えましょう！</h3>
+<p>1) 下の絵（え; picture）を見てください。何をしていますか。どうしてですか。</p>
+<div id="exercise-container"></div>
+
+<h3>2. 読みましょう！</h3>
+<div class="instructions">
+次の文章（ぶんしょう）を読んで、空欄（くうらん; blank）に入る正しい（ただしい; correct）ものを全部（ぜんぶ; all）選んで（えらんで; choose）ください。
+</div>
+  
+<p id="reading-text">
+  <!-- Examples: specify action + (for audio) data-audio + (for define) data-key -->
+<span class="sentence">ミッシェルは、今日本に<span class="word audio" data-action="audio" data-audio="audio/ryuugaku.mp3">留学</span>しています。</span>
+<span class="sentence">ホームステイをしていて、毎日<span class="word audio" data-action="audio" data-audio="audio/densha.mp3">電車</span>で大学に行っているので、日本のいろいろな<span class="word audio" data-action="audio" data-audio="audio/shyuukan.mp3">習慣</span>がわかってきました。</span>
+<span class="sentence">ミッシェルが<span class="word audio" data-action="audio" data-audio="audio/ichiban.mp3">一番</span>おもしろいと思う<span class="word audio" data-action="audio" data-audio="audio/shyuukan.mp3">習慣</span>は、<span class="word define" data-action="define" data-key="おじぎ">おじぎ</span>です。</span>
+<span class="sentence"><span class="word audio" data-action="audio" data-audio="audio/kazoku.mp3">家族</span>どうしが<span class="word define" data-action="define" data-key="おじぎ">おじぎ</span>をすることはありませんが、<span class="word define" data-action="define" data-key="げんかん">げんかん</span>にお<span class="word audio" data-action="audio" data-audio="audio/kyaku.mp3">客</span>さんが来たら、<span class="word define" data-action="define" data-key="おじぎ">おじぎ</span>をします。</span>
+<span class="sentence"><span class="word audio" data-action="audio" data-audio="audio/soto.mp3">外</span>で<span class="word audio" data-action="audio" data-audio="audio/kinjyo.mp3">近所</span>の人に<span class="word audio" data-action="audio" data-audio="audio/atta.mp3">会った</span>時も<span class="word define" data-action="define" data-key="おじぎ">おじぎ</span>をします。</span>
+<span class="sentence">大学のキャンパスで先生に会って、<span class="word define" data-action="define" data-key="おじぎ">おじぎ</span>をしないのは、とても<span class="word audio" data-action="audio" data-audio="audio/shitsuree.mp3">失礼</span>です。</span>
+<span class="sentence">とてもおかしいのは、<span class="word define" data-action="define" data-key="けいたい電話">けいたい電話</span>で話している人が、話している<span class="word audio" data-action="audio" data-audio="audio/aite.mp3">相手</span>に「どうもすみません」とか「どうもありがとうございました」などと言って、<span class="word define" data-action="define" data-key="おじぎ">おじぎ</span>をすることです。</span>
+</p>
+<p>
+<span class="sentence">ミッシェルは、おじぎのことをもっとよく知りたいと思って、大学の<span class="word audio" data-action="audio" data-audio="audio/toshokan.mp3">図書館</span>で日本人の<span class="word audio" data-action="audio" data-audio="audio/shyuukan.mp3">習慣</span>を<span class="word audio" data-action="audio" data-audio="audio/setsumee.mp3">説明</span>している本を<span class="word audio" data-action="audio" data-audio="audio/karite.mp3">借りて</span>、おじぎについて読んでみました。</span>
+<span class="sentence">本を読んで、<span class="word audio" data-action="audio" data-audio="audio/tsugi.mp3">次</span>のことがわかりました。</span>
+<span class="sentence">まず、<span class="word audio" data-action="audio" data-audio="audio/meue.mp3">目上</span>の人と<span class="word audio" data-action="audio" data-audio="audio/meshita.mp3">目下</span>の人が<span class="word audio" data-action="audio" data-audio="audio/atta.mp3">会った</span>時、<span class="word audio" data-action="audio" data-audio="audio/meshita.mp3">目下</span>の人のほうが<span class="word audio" data-action="audio" data-audio="audio/hukai.mp3">深い</span>おじぎをしなくてはいけません。</span>
+<span class="sentence">お<span class="word audio" data-action="audio" data-audio="audio/mise.mp3">店</span>の<span class="word audio" data-action="audio" data-audio="audio/tenin.mp3">店員</span>やレストランの<span class="word define" data-action="define" data-key="ホールスタッフ">ホールスタッフ</span>もお<span class="word audio" data-action="audio" data-audio="audio/kyaku.mp3">客</span>さんに<span class="word audio" data-action="audio" data-audio="audio/hukai.mp3">深い</span>おじぎをしなくてはいけません。
+<span class="sentence">それから、おじぎは<span class="word audio" data-action="audio" data-audio="audio/chikaku.mp3">近く</span>にいる人だけにするものではありません。</span>
+<span class="sentence"><span class="word audio" data-action="audio" data-audio="audio/tooku.mp3">遠く</span>に知っている人を見て、その人が友だちだったら、<span class="word define" data-action="define" data-key="手をふる">手をふる</span>だけでいいですが、その人が<span class="word audio" data-action="audio" data-audio="audio/meue.mp3">目上</span>の人だったら、<span class="word define" data-action="define" data-key="手をふる">手をふる</span>のではなくて、<span class="word audio" data-action="audio" data-audio="audio/atama.mp3">頭</span>を<span class="word audio" data-action="audio" data-audio="audio/sukoshi.mp3">少し</span><span class="word audio" data-action="audio" data-audio="audio/sageta.mp3">下げた</span>ほうがいいです。</span>
+</p>
+<p>
+<span class="sentence">その本を読んでから、ミッシェルは『ローマでは、ローマ人がするようにしなさい（<span class="word audio" data-action="audio" data-audio="audio/goo.mp3">郷</span>に<span class="word audio" data-action="audio" data-audio="audio/itte.mp3">入って</span>は<span class="word audio" data-action="audio" data-audio="audio/goo.mp3">郷</span>にしたがえ）When in Rome, do as the Romans do.』という<span class="word define" data-action="define" data-key="ことわざ">ことわざ</span>を<span class="word audio" data-action="audio" data-audio="audio/omoidashite.mp3">思い出して</span>、日本人のようにおじぎをすることにしました。</span>
+</p>
+
+<div class="controls">
+  Use Tab to focus a word and press Enter/Space to activate. Words colored blue = audio, orange = definition, blue+bold = both.
+</div>
+
+<!-- Popup for definitions -->
+<div class="popup" id="popup" aria-hidden="true">
+  <div class="popup-content" role="dialog" aria-modal="true" aria-labelledby="popup-title">
+    <button class="close-btn" id="closePopup" aria-label="Close">&times;</button>
+    <h2 id="popup-title"></h2>
+    <p id="popup-definition"></p>
+    <img id="popup-image" src="" alt="" />
+  </div>
+</div>
+
+<div id="mc-question">
+ <div class="mc-question"
+     data-hint="４、５、６、７、１２、１３文目を読みましょう！">
+
+  <div class="mc-header">
+    <p class="mc-qtext">1) 日本人は、＿＿＿＿＿＿＿におじぎをしません。</p>
+
+    <!-- Light bulb hint button -->
+    <button class="hint-btn" onclick="showHint(this)">💡</button>
+  </div>
+
+  <div class="hint-box" style="display:none;"></div>
+
+  <div class="choices">
+
+    <button class="mc-option"
+            data-option="A"
+            data-correct="true">
+      A. 家族
+    </button>
+
+    <button class="mc-option"
+            data-option="B"
+            data-correct="false"
+            data-feedback1="❌　不正解（ふせいかい） - ４文目をもう一度読みましょう(re-read sentence 4)！"
+            data-feedback2="ヒント：Review the sentence structures 「Aが、B」and「Aたら、B」."
+            data-video="videos/explain1-B.mp4">
+      B. お客さん
+    </button>
+
+    <button class="mc-option"
+            data-option="C"
+            data-correct="true">
+      C. 友だち
+    </button>
+
+    <button class="mc-option"
+            data-option="D"
+            data-correct="false"
+            data-feedback1="❌　不正解（ふせいかい） - ６文目をもう一度読みましょう(re-read sentence 6)！"
+            data-feedback2="ヒント：Bear in mind the most basic sentence structure「Topicは、Commentです」. What is the topic and comment in this sentence?"
+            data-video="videos/explain1-D.mp4">
+      D. 先生
+    </button>
+
+    <button class="mc-option"
+            data-option="E"
+            data-correct="false"
+            data-feedback1="❌　不正解（ふせいかい） - ７文目をもう一度読みましょう(re-read sentence 7)！"
+            data-feedback2="ヒント：What is the main sentence within this sentence (「Topicは、Commentです」)? What role does the rest of the sentence play?"
+            data-video="videos/explain1-E.mp4">
+      E. 電話で話している相手
+    </button>
+
+    <button class="mc-option"
+            data-option="F"
+            data-correct="false"
+            data-feedback1="❌　不正解（ふせいかい） - ５文目をもう一度読みましょう(re-read sentence 5)！"
+            data-feedback2="ヒント：In the sentence structure「A時、B (When A, B)」, A describes the context in which B occurs."
+            data-video="videos/explain1-F.mp4">
+      F. 近所の人
+    </button>
+
+    <button class="mc-option"
+            data-option="G"
+            data-correct="false"
+            data-feedback1="❌　不正解（ふせいかい） - １３文目をもう一度読みましょう(re-read sentence 13)！"
+            data-feedback2="ヒント：Review the sentence structure「Aが、B」. In each contrastive situation A and B, there are also「Aたら、B」clauses indicating the context 'When/If A, B'."
+            data-video="videos/explain1-G.mp4">
+      G. 遠くにいる人
+    </button>
+
+    <button class="mc-option"
+            data-option="H"
+            data-correct="false"
+            data-feedback1="❌　不正解（ふせいかい） - １２文目をもう一度読みましょう(re-read sentence 12)！"
+            data-feedback2="ヒント：Try to understand the sentence in the affirmative form first（おじぎは近くにいる人だけにするものです）, then negate it."
+            data-video="videos/explain1-H.mp4">
+      H. 近くにいる人
+    </button>
+  </div>
+
+  <!-- Result area -->
+  <div class="mc-stage1" style="display:none;"></div>
+
+  <!-- Hint stage 1 button -->
+  <button class="mc-hint1-btn"
+          style="display:none;"
+          onclick="showHintStage2(this)">
+    ヒント１
+  </button>
+
+  <!-- Second feedback stage -->
+  <div class="mc-stage2" style="display:none;"></div>
+
+  <!-- Hint stage 2 button -->
+  <button class="mc-hint2-btn"
+          style="display:none;"
+          onclick="showHintStage3(this)">
+    ヒント２
+  </button>
+
+  <!-- Video stage -->
+  <div class="mc-stage3" style="display:none;">
+    <video class="mc-video" controls style="max-width:100%; margin-top:10px;"></video>
+  </div>
+</div>
+
+  
+ <div class="mc-question"
+     data-hint="８文目を読みましょう！">
+
+  <div class="mc-header">
+    <p class="mc-qtext">2) ミッシェルは、＿＿＿＿＿＿＿から(reason)、おじぎの本を読みました。</p>
+
+    <!-- Light bulb hint button -->
+    <button class="hint-btn" onclick="showHint(this)">💡</button>
+  </div>
+
+  <div class="hint-box" style="display:none;"></div>
+
+  <div class="choices">
+
+    <button class="mc-option"
+            data-option="A"
+            data-correct="false"
+            data-feedback1="❌　不正解（ふせいかい） - ８文目をもう一度読みましょう(re-read sentence 8)！"
+            data-feedback2="ヒント：Go over the Kanji used in the sentence - is 宿題 there?"
+            data-video="videos/explain2.mp4">
+      A. 宿題
+    </button>
+
+    <button class="mc-option"
+            data-option="B"
+            data-correct="false"
+            data-feedback1="❌　不正解（ふせいかい） - ８文目をもう一度読みましょう(re-read sentence 8)！"
+            data-feedback2="ヒント：Did she borrow the book from a specific person or a place?"
+            data-video="videos/explain2.mp4">
+      B. 友だちに本を借りた
+    </button>
+
+    <button class="mc-option"
+            data-option="C"
+            data-correct="true">
+      C. おじぎについて知りたい
+    </button>
+  </div>
+
+  <!-- Result area -->
+  <div class="mc-stage1" style="display:none;"></div>
+
+  <!-- Hint stage 1 button -->
+  <button class="mc-hint1-btn"
+          style="display:none;"
+          onclick="showHintStage2(this)">
+    ヒント１
+  </button>
+
+  <!-- Second feedback stage -->
+  <div class="mc-stage2" style="display:none;"></div>
+
+  <!-- Hint stage 2 button -->
+  <button class="mc-hint2-btn"
+          style="display:none;"
+          onclick="showHintStage3(this)">
+    ヒント２
+  </button>
+
+  <!-- Video stage -->
+  <div class="mc-stage3" style="display:none;">
+    <video class="mc-video" controls style="max-width:100%; margin-top:10px;"></video>
+  </div>
+</div>
+
+ <div class="mc-question"
+     data-hint="１０、１１文目を読みましょう！">
+
+  <div class="mc-header">
+    <p class="mc-qtext">3) ＿＿＿＿＿は、＿＿＿＿＿に深いおじぎをしなくてはいけません。</p>
+
+    <!-- Light bulb hint button -->
+    <button class="hint-btn" onclick="showHint(this)">💡</button>
+  </div>
+
+  <div class="hint-box" style="display:none;"></div>
+
+  <div class="choices">
+
+    <button class="mc-option"
+            data-option="A"
+            data-correct="false"
+            data-feedback1="❌　不正解（ふせいかい） - １０文目をもう一度読みましょう(re-read sentence 10)！"
+            data-feedback2="ヒント：In the sentence structure「A時、B (When A, B)」, A describes the context in which B occurs."
+            data-video="videos/explain3-A.mp4">
+      A. 目上の人は　目下の人に
+    </button>
+
+    <button class="mc-option"
+            data-option="B"
+            data-correct="true">
+      B. 目下の人は　目上の人に
+    </button>
+
+    <button class="mc-option"
+            data-option="C"
+            data-correct="true">
+      C. 店員は　お客さんに
+    </button>
+
+    <button class="mc-option"
+            data-option="D"
+            data-correct="false"
+            data-feedback1="❌　不正解（ふせいかい） - １１文目をもう一度読みましょう(re-read sentence 11)！"
+            data-feedback2="ヒント：What is the topic of the sentence? Remember that も replaces は when what follows (i.e., the comment) overlaps with the previous statement (e.g., 私はすしが好きです。先生もすしが好きです。)"
+            data-video="videos/explain3-D.mp4">
+      D. お客さんは　店員に
+    </button>
+
+    <button class="mc-option"
+            data-option="E"
+            data-correct="true">
+      E. ホールスタッフは　お客さんに
+    </button>
+
+    <button class="mc-option"
+            data-option="F"
+            data-correct="false"
+            data-feedback1="❌　不正解（ふせいかい） - １１文目をもう一度読みましょう(re-read sentence 11)！"
+            data-feedback2="ヒント：What is the topic of the sentence? Remember that も replaces は when what follows (i.e., the comment) overlaps with the previous statement (e.g., 私はすしが好きです。先生もすしが好きです。)"
+            data-video="videos/explain3-D.mp4">
+      F. お客さんは　ホールスタッフに
+    </button>
+  </div>
+
+  <!-- Result area -->
+  <div class="mc-stage1" style="display:none;"></div>
+
+  <!-- Hint stage 1 button -->
+  <button class="mc-hint1-btn"
+          style="display:none;"
+          onclick="showHintStage2(this)">
+    ヒント１
+  </button>
+
+  <!-- Second feedback stage -->
+  <div class="mc-stage2" style="display:none;"></div>
+
+  <!-- Hint stage 2 button -->
+  <button class="mc-hint2-btn"
+          style="display:none;"
+          onclick="showHintStage3(this)">
+    ヒント２
+  </button>
+
+  <!-- Video stage -->
+  <div class="mc-stage3" style="display:none;">
+    <video class="mc-video" controls style="max-width:100%; margin-top:10px;"></video>
+  </div>
+</div>
+
+<div class="kanji-exercise">
+  <h3>3. 漢字を勉強しましょう！</h3>
+  <p>1) The same Kanji goes in each box. Enter the correct Kanji and enter the Hiragana reading of the entire Kanji word (i.e., two-character compound word).</p>
+
+  <!-- Question 1 -->
+  <div class="kx-item">
+    <div class="kx-expression">
+      留<input class="kanji-input" id="k1a">　大<input class="kanji-input" id="k1b">
+    </div>
+    <input class="reading-input" id="k1-read" placeholder="ひらがな">
+    <button onclick="checkKX(1, '学', 'りゅうがく / だいがく')">Check answers</button>
+    <div id="kx-result-1" class="kx-result"></div>
+  </div>
+
+  <!-- Question 2 -->
+  <div class="kx-item">
+    <div class="kx-expression">
+      <input class="kanji-input" id="k2a">車　<input class="kanji-input" id="k2b">話
+    </div>
+    <input class="reading-input" id="k2-read" placeholder="ひらがな">
+    <button onclick="checkKX(2, '電', 'でんしゃ / でんわ')">Check answers</button>
+    <div id="kx-result-2" class="kx-result"></div>
+  </div>
+
+  <!-- Question 3 -->
+  <div class="kx-item">
+    <div class="kx-expression">
+      <input class="kanji-input" id="k3a">上　<input class="kanji-input" id="k3b">下
+    </div>
+    <input class="reading-input" id="k3-read" placeholder="ひらがな">
+    <button onclick="checkKX(3, '目', 'めうえ / めした')">Check answers</button>
+    <div id="kx-result-3" class="kx-result"></div>
+  </div>
+</div>
+
+<div class="part2-section">
+  <p>2) Examine these cases where the same Kanji is being used in different contexts. Enter the Hiragana reading of the Kanji in each context. Does the reading change? Why does/doesn’t it change? </p>
+</p>
+
+  <!-- Question 1 -->
+  <div class="p2-item">
+    <div class="p2-word-block">
+      <div class="p2-word">近い</div>
+      <input class="p2-reading" id="q1a-read" onblur="checkReading(1,'a','ちかい')" placeholder="ひらがな">
+      <div id="q1a-feedback" class="p2-feedback"></div>
+    </div>
+
+    <div class="p2-word-block">
+      <div class="p2-word">近所</div>
+      <input class="p2-reading" id="q1b-read" onblur="checkReading(1,'b','きんじょ')" placeholder="ひらがな">
+      <div id="q1b-feedback" class="p2-feedback"></div>
+    </div>
+
+    <div class="p2-buttons">
+      The reading:
+      <button onclick="selectP2(1, 'changes')" id="q1-changes">changes</button>
+      <button onclick="selectP2(1, 'same')" id="q1-same">doesn't change</button>
+    </div>
+
+    <div id="q1-change-feedback" class="p2-feedback"></div>
+
+    <button onclick="showP2Explanation(1)">Why does/doesn't it change?</button>
+    <div class="p2-explanation" id="p2-exp-1">
+      「ちか」 in 「ちかい」 is the kun-reading, while 「きん」 in 「きんじょ」 is on-reading. Kun-reading is generally used for native-Japanese words, hence is usually used for Kanji that stand alone (i.e., not compound words). On-reading, on the other hand, is used for two-character compound words that were imported from China, hence resemble the original Chinese pronunciation. 
+    </div>
+  </div>
+
+  <!-- Question 2 -->
+  <div class="p2-item">
+    <div class="p2-word-block">
+      <div class="p2-word">お店</div>
+      <input class="p2-reading" id="q2a-read" onblur="checkReading(2,'a','おみせ')" placeholder="ひらがな">
+      <div id="q2a-feedback" class="p2-feedback"></div>
+    </div>
+
+    <div class="p2-word-block">
+      <div class="p2-word">店員</div>
+      <input class="p2-reading" id="q2b-read" onblur="checkReading(2,'b','てんいん')" placeholder="ひらがな">
+      <div id="q2b-feedback" class="p2-feedback"></div>
+    </div>
+
+    <div class="p2-buttons">
+      The reading:
+      <button onclick="selectP2(2, 'changes')" id="q2-changes">changes</button>
+      <button onclick="selectP2(2, 'same')" id="q2-same">doesn't change</button>
+    </div>
+
+    <div id="q2-change-feedback" class="p2-feedback"></div>
+
+    <button onclick="showP2Explanation(2)">Why does/doesn't it change?</button>
+    <div class="p2-explanation" id="p2-exp-2">
+      「みせ」 in 「おみせ」 is the kun-reading, while 「てん」 in 「てんいん」 is on-reading. Kun-reading is generally used for native-Japanese words, hence is usually used for Kanji that stand alone (i.e., not compound words). On-reading, on the other hand, is generally used for two-character compound words that were imported from China, hence resemble the original Chinese pronunciation. 
+    </div>
+  </div>
+
+  <!-- Question 3 -->
+  <div class="p2-item">
+    <div class="p2-word-block">
+      <div class="p2-word">手をふる</div>
+      <input class="p2-reading" id="q3a-read" onblur="checkReading(3,'a','てをふる')" placeholder="ひらがな">
+      <div id="q3a-feedback" class="p2-feedback"></div>
+    </div>
+
+    <div class="p2-word-block">
+      <div class="p2-word">相手</div>
+      <input class="p2-reading" id="q3b-read" onblur="checkReading(3,'b','あいて')" placeholder="ひらがな">
+      <div id="q3b-feedback" class="p2-feedback"></div>
+    </div>
+
+    <div class="p2-buttons">
+      The reading:
+      <button onclick="selectP2(3, 'changes')" id="q3-changes">changes</button>
+      <button onclick="selectP2(3, 'same')" id="q3-same">doesn't change</button>
+    </div>
+
+    <div id="q3-change-feedback" class="p2-feedback"></div>
+
+    <button onclick="showP2Explanation(3)">Why does/doesn't it change?</button>
+    <div class="p2-explanation" id="p2-exp-3">
+      「て」is the kun-reading of 「手」. Sometimes kun-reading is used in two-character compound words. Bear in mind that in other compound words such as 歌手（かしゅ; singer）and 投手（とうしゅ; pitcher）, the on-reading 「しゅ」is used.
+    </div>
+  </div>
+</div>
+
+<div id="part3">
+  <p>3) Here is a list of Kanji appearing in this reading as well as learned Kanji. Drag and drop Kanji with common radicals in the drop-zones below. There are ten radical groups.</p>
+
+<!-- Source tray -->
+<div id="kanji-tray" class="tray">
+  <div class="kanji">話</div>
+  <div class="kanji">深</div>
+  <div class="kanji">行</div>
+  <div class="kanji">借</div>
+  <div class="kanji">飲</div>
+  <div class="kanji">電</div>
+  <div class="kanji">作</div>
+  <div class="kanji">安</div>
+  <div class="kanji">泳</div>
+  <div class="kanji">近</div>
+  <div class="kanji">雲</div>
+  <div class="kanji">室</div>
+  <div class="kanji">時</div>
+  <div class="kanji">後</div>
+  <div class="kanji">読</div>
+  <div class="kanji">何</div>
+  <div class="kanji">油</div>
+  <div class="kanji">店</div>
+  <div class="kanji">飯</div>
+  <div class="kanji">客</div>
+  <div class="kanji">計</div>
+  <div class="kanji">広</div>
+  <div class="kanji">雪</div>
+  <div class="kanji">暗</div>
+  <div class="kanji">遠</div>
+  <div class="kanji">宅</div>
+  <div class="kanji">休</div>
+  <div class="kanji">待</div>
+  <div class="kanji">曜</div>
+  <div class="kanji">語</div>
+  <div class="kanji">家</div>
+  <div class="kanji">説</div>
+  <div class="kanji">低</div>
+  <div class="kanji">海</div>
+  <div class="kanji">館</div>
+  <div class="kanji">度</div>
+  <div class="kanji">週</div>
+  <div class="kanji">明</div>
+  <div class="kanji">字</div>
+  <div class="kanji">晩</div>
+  <div class="kanji">体</div>
+  <div class="kanji">酒</div>
+</div>
+
+<!-- Three unlabeled drop-zones -->
+<div class="zones">
+  <div class="zone" data-zone="1"></div>
+  <div class="zone" data-zone="2"></div>
+  <div class="zone" data-zone="3"></div>
+  <div class="zone" data-zone="4"></div>
+  <div class="zone" data-zone="5"></div>
+  <div class="zone" data-zone="6"></div>
+  <div class="zone" data-zone="7"></div>
+  <div class="zone" data-zone="8"></div>
+  <div class="zone" data-zone="9"></div>
+  <div class="zone" data-zone="10"></div>
+</div>
+
+<div class="controls">
+  <button id="check">Check Answers</button>
+  <button id="reset">Reset</button>
+</div>
+<div id="result" class="result" aria-live="polite"></div>
+
+<script>
+  // Script for pre-reading exercise
+// --- Replace these with YOUR six images ---
+const images = [
+  {label:"a", url:"images/business.jpg", feedback:"They are bowing to each other because this is a formal business setting."},
+  {label:"b", url:"images/restaurant.jpg", feedback:"The waiter is bowing deeply to the customer to show politeness and gratitude."},
+  {label:"c", url:"images/colleagues.jpg", feedback:"They are bowing lightly to each other since they are friendly colleagues in a professional setting."},
+  {label:"d", url:"images/student.jpg", feedback:"The student is bowing deeply to the professor as a sign of respect."},
+];
+
+const container = document.getElementById("exercise-container");
+
+images.forEach((item, index) => {
+  const block = document.createElement("div");
+  block.className = "image-block";
+
+  block.innerHTML = `
+    <div class="label">${item.label})</div>
+    <img src="${item.url}" alt="Image ${item.label}">
+    <label>Why:</label><br>
+    <input type="text" id="answer-${index}" placeholder="Type your answer here">
+    <div class="feedback" id="feedback-${index}"></div>
+  `;
+
+  container.appendChild(block);
+
+  // Add behavior for showing feedback
+  const input = block.querySelector("input");
+  const feedbackDiv = block.querySelector(".feedback");
+
+  function showFeedback() {
+    if (input.value.trim() !== "") {
+      feedbackDiv.textContent = item.feedback;
+    } else {
+      feedbackDiv.textContent = "";
+    }
+  }
+
+  input.addEventListener("blur", showFeedback);
+  input.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") {
+      input.blur(); // triggers the blur event
+    }
+  });
+});
+</script>
+<script>
+  // Script for multiple choice
+function showHint(btn) {
+  const q = btn.closest(".mc-question");
+  const hintBox = q.querySelector(".hint-box");
+  hintBox.textContent = q.dataset.hint;
+  hintBox.style.display = "block";
+}
+
+function checkMCOption(optionBtn) {
+  const q = optionBtn.closest(".mc-question");
+
+  const isCorrect = optionBtn.dataset.correct === "true";
+  const feedback1 = optionBtn.dataset.feedback1;
+  const feedback2 = optionBtn.dataset.feedback2;
+  const videoPath = optionBtn.dataset.video;
+
+  const stage1 = q.querySelector(".mc-stage1");
+  const stage2 = q.querySelector(".mc-stage2");
+  const stage3 = q.querySelector(".mc-stage3");
+
+  const hint1Btn = q.querySelector(".mc-hint1-btn");
+  const hint2Btn = q.querySelector(".mc-hint2-btn");
+  const videoEl = q.querySelector(".mc-video");
+
+  // Reset stages
+  stage1.style.display = "none";
+  stage2.style.display = "none";
+  stage3.style.display = "none";
+  hint1Btn.style.display = "none";
+  hint2Btn.style.display = "none";
+
+  if (isCorrect) {
+    stage1.textContent = "✅ 正解（せいかい）";
+    stage1.style.color = "green";
+    stage1.style.display = "block";
+    return;
+  }
+
+  // Incorrect option → Stage 1 feedback
+  stage1.textContent = feedback1;
+  stage1.style.color = "red";
+  stage1.style.display = "block";
+
+  // Show hint1 button
+  hint1Btn.dataset.feedback2 = feedback2;
+  hint1Btn.dataset.video = videoPath;
+  hint1Btn.style.display = "inline-block";
+}
+
+function showHintStage2(btn) {
+  const q = btn.closest(".mc-question");
+  const stage2 = q.querySelector(".mc-stage2");
+
+  stage2.textContent = btn.dataset.feedback2;
+  stage2.style.display = "block";
+
+  // Set up hint 2 button for stage 3
+  const hint2Btn = q.querySelector(".mc-hint2-btn");
+  hint2Btn.dataset.video = btn.dataset.video;
+  hint2Btn.style.display = "inline-block";
+}
+
+function showHintStage3(btn) {
+  const q = btn.closest(".mc-question");
+  const stage3 = q.querySelector(".mc-stage3");
+  const videoEl = q.querySelector(".mc-video");
+
+  videoEl.src = btn.dataset.video;
+  stage3.style.display = "block";
+}
+
+// Allow all options to trigger checkMCOption
+document.addEventListener("click", function(e) {
+  if (e.target.classList.contains("mc-option")) {
+    checkMCOption(e.target);
+  }
+});
+</script>
+
+<script>
+//Script for in-text interactive elements
+const dictionary = {
+  "おじぎ": {
+    word: "おじぎ",
+    definition: "Bowing.",
+    image: "images/ojigi.jpg"
+  },
+  "けいたい電話": {
+    word: "けいたい電話",
+    definition: "Cell phone.",
+    image: "images/denwa.jpg"
+  },
+  "ことわざ": {
+    word: "ことわざ",
+    definition: "Proverb.",
+    image: "images/kotowaza.jpg"
+  },
+   "ホールスタッフ": {
+    word: "ホールスタッフ",
+    definition: "Waiting staff.",
+    image: "images/staff.jpg"
+  },
+  "手をふる": {
+    word: "手をふる",
+    definition: "To wave.",
+    image: "images/teohuru.jpg"
+  },
+  "げんかん": {
+    word: "げんかん",
+    definition: "Front door.",
+    image: "images/genkan.jpg"
+  }
+};
+
+/* Utility: Stop all playing audio and remove playing highlight */
+function stopAllPlaying() {
+  document.querySelectorAll('.word.playing').forEach(el => el.classList.remove('playing'));
+  // Pause any audio objects stored on elements
+  document.querySelectorAll('.word').forEach(el => {
+    if (el._audio) {
+      try { el._audio.pause(); el._audio.currentTime = 0; } catch(e) {}
+    }
+  });
+}
+
+/* Handle popup (definition + image) */
+const popup = document.getElementById('popup');
+const popupTitle = document.getElementById('popup-title');
+const popupDefinition = document.getElementById('popup-definition');
+const popupImage = document.getElementById('popup-image');
+const closePopup = document.getElementById('closePopup');
+
+function showPopup(key) {
+  const entry = dictionary[key];
+  if (!entry) return;
+  popupTitle.textContent = entry.word;
+  popupDefinition.textContent = entry.definition;
+  popupImage.src = entry.image || "";
+  popupImage.alt = entry.image ? `Image illustrating ${entry.word}` : "";
+  popup.style.display = 'flex';
+  popup.setAttribute('aria-hidden', 'false');
+  // trap focus to close button for simple accessibility
+  closePopup.focus();
+}
+function hidePopup() {
+  popup.style.display = 'none';
+  popup.setAttribute('aria-hidden', 'true');
+}
+
+/* Close handlers */
+closePopup.addEventListener('click', hidePopup);
+popup.addEventListener('click', (e) => {
+  if (e.target === popup) hidePopup(); // click outside content
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') hidePopup();
+});
+
+/* Main: wire up word elements */
+document.querySelectorAll('.word').forEach(elem => {
+  const action = elem.dataset.action || "";
+  // Preload audio only if audio provided
+  if ((action === 'audio' || action === 'both') && elem.dataset.audio) {
+    const a = new Audio(elem.dataset.audio);
+    elem._audio = a;
+  }
+
+  function activate() {
+    const a = elem._audio;
+    const key = (elem.dataset.key || "").toLowerCase();
+
+    // If both or audio -> play audio
+    if ((action === 'audio' || action === 'both') && a) {
+      stopAllPlaying();
+      elem.classList.add('playing');
+      a.currentTime = 0;
+      a.play().catch(err => { console.warn("audio play failed:", err); });
+      a.onended = () => elem.classList.remove('playing');
+    }
+
+    // If define or both -> show popup if entry exists; else optional fallback
+    if ((action === 'define' || action === 'both') && key) {
+      if (dictionary[key]) {
+        showPopup(key);
+      } else {
+        // Fallback: try browser TTS to read a short message
+        const msg = `${key}. Definition not available.`;
+        if ('speechSynthesis' in window) {
+          speechSynthesis.cancel();
+          const ut = new SpeechSynthesisUtterance(msg);
+          speechSynthesis.speak(ut);
+        } else {
+          alert(msg);
+        }
+      }
+    }
+  }
+
+  // click handler
+  elem.addEventListener('click', activate);
+
+  // keyboard activation (Enter or Space)
+  elem.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      activate();
+    }
+  });
+});
+
+/* Accessibility: ensure focus outline on click for mouse users */
+document.addEventListener('mousedown', () => {
+  document.body.classList.add('using-mouse');
+});
+document.addEventListener('keydown', () => {
+  document.body.classList.remove('using-mouse');
+});
+</script>
+
+<script>
+  // Script for Kanji part 1
+function checkKX(num, correctKanji, correctReading) {
+  const a = document.getElementById(`k${num}a`).value.trim();
+  const b = document.getElementById(`k${num}b`).value.trim();
+  const r = document.getElementById(`k${num}-read`).value.trim();
+  const result = document.getElementById(`kx-result-${num}`);
+
+  const correctReads = correctReading.split('/').map(x => x.trim());
+
+  let okKanji = (a === correctKanji && b === correctKanji);
+  let okReading = correctReads.includes(r);
+
+  if (okKanji && okReading) {
+    result.textContent = "✅ 正解！";
+    result.style.color = "green";
+  } else {
+    result.textContent =
+      `❌ 不正解。正しい漢字：「${correctKanji}」、読み方：「${correctReading}」`;
+    result.style.color = "red";
+  }
+}
+</script>
+
+<script>
+function selectP2(num, choice) {
+  let changesBtn = document.getElementById(`q${num}-changes`);
+  let sameBtn = document.getElementById(`q${num}-same`);
+
+  // Clear previous highlight
+  changesBtn.classList.remove("selected-button");
+  sameBtn.classList.remove("selected-button");
+
+  // Highlight the selected one
+  if (choice === 'changes') {
+    changesBtn.classList.add("selected-button");
+  } else {
+    sameBtn.classList.add("selected-button");
+  }
+}
+
+function showP2Explanation(num) {
+  const box = document.getElementById(`p2-exp-${num}`);
+  box.style.display = "block";
+}
+</script>
+
+<script>
+// Scropt for Kanji part 2
+// Check Hiragana readings
+function checkReading(num, part, correct) {
+  const input = document.getElementById(`q${num}${part}-read`).value.trim();
+  const feedback = document.getElementById(`q${num}${part}-feedback`);
+
+  if (input === correct) {
+    feedback.textContent = "正解（せいかい）";
+    feedback.className = "p2-feedback correct";
+  } else {
+    feedback.textContent = `不正解（ふせいかい） → 正しい読み方：${correct}`;
+    feedback.className = "p2-feedback incorrect";
+  }
+}
+
+// Check “changes / doesn’t change”
+function selectP2(num, choice) {
+  const changesBtn = document.getElementById(`q${num}-changes`);
+  const sameBtn = document.getElementById(`q${num}-same`);
+  const feedback = document.getElementById(`q${num}-change-feedback`);
+
+  changesBtn.classList.remove("selected-button");
+  sameBtn.classList.remove("selected-button");
+
+  if (choice === 'changes') {
+    changesBtn.classList.add("selected-button");
+  } else {
+    sameBtn.classList.add("selected-button");
+  }
+
+  // Correct answers:
+  const correctAnswers = {
+    1: 'changes',
+    2: 'changes',
+    3: 'same'
+  };
+
+  if (choice === correctAnswers[num]) {
+    feedback.textContent = "正解（せいかい）";
+    feedback.className = "p2-feedback correct";
+  } else {
+    feedback.textContent = "不正解（ふせいかい）";
+    feedback.className = "p2-feedback incorrect";
+  }
+}
+
+// Show explanation
+function showP2Explanation(num) {
+  document.getElementById(`p2-exp-${num}`).style.display = "block";
+}
+</script>
+
+<script>
+// Script for Kanji part 3
+// app.js
+'use strict';
+
+/* -----------------------------------------------------------
+   0) Style injection for incorrect highlights (red)
+----------------------------------------------------------- */
+(function injectStyles() {
+  const css = `
+    .kanji.incorrect {
+      outline: 2px solid #ef4444;
+      background-color: #ffecec; /* soft red */
+    }
+    /* Optional: show correct tiles in green (commented out by default)
+    .kanji.correct {
+      outline: 2px solid #22c55e;
+      background-color: #eaffea;
+    } */
+    .zone.highlight { border-color: #3b82f6; background: #eaf2ff; }
+  `;
+  const style = document.createElement('style');
+  style.textContent = css;
+  document.head.appendChild(style);
+})();
+
+/* -----------------------------------------------------------
+   1) Pointer-based drag & drop (desktop + mobile)
+   - Drags any .kanji inside #kanji-tray into any .zone
+----------------------------------------------------------- */
+(function dragInit() {
+  const tray = document.getElementById('kanji-tray');
+  const zones = Array.from(document.querySelectorAll('.zone'));
+  if (!tray || zones.length === 0) return;
+
+  let dragging = null, ghost = null;
+
+  function makeGhost(text, x, y) {
+    const g = document.createElement('div');
+    g.className = 'kanji';
+    g.style.position = 'fixed';
+    g.style.zIndex = '9999';
+    g.style.pointerEvents = 'none';
+    g.style.borderColor = '#3b82f6';
+    g.style.boxShadow = '0 6px 16px rgba(0,0,0,.2)';
+    g.textContent = text;
+    positionGhost(g, x, y);
+    document.body.appendChild(g);
+    return g;
+  }
+
+  function positionGhost(g, x, y) {
+    const w = g.offsetWidth || 48, h = g.offsetHeight || 48;
+    g.style.left = (x - w/2) + 'px';
+    g.style.top  = (y - h/2) + 'px';
+  }
+
+  function clearHighlights() {
+    document.querySelectorAll('.zone.highlight').forEach(z => z.classList.remove('highlight'));
+  }
+
+  function zoneUnderPointer(x, y) {
+    const el = document.elementFromPoint(x, y);
+    return el?.closest('.zone') || el?.closest('#kanji-tray') || null;
+  }
+
+  function onMove(e) {
+    if (!ghost) return;
+    positionGhost(ghost, e.clientX, e.clientY);
+    clearHighlights();
+    const z = zoneUnderPointer(e.clientX, e.clientY);
+    if (z && z.classList.contains('zone')) z.classList.add('highlight');
+  }
+
+  function onUp(e) {
+    clearHighlights();
+    const z = zoneUnderPointer(e.clientX, e.clientY);
+    if (z) z.appendChild(dragging);
+    dragging = null;
+    if (ghost) { document.body.removeChild(ghost); ghost = null; }
+    window.removeEventListener('pointermove', onMove);
+    window.removeEventListener('pointerup', onUp);
+  }
+
+  // bind pointer dragging to all .kanji tiles
+  function bindTiles() {
+    Array.from(document.querySelectorAll('#kanji-tray .kanji, .zone .kanji')).forEach(tile => {
+      tile.addEventListener('pointerdown', (e) => {
+        e.preventDefault();                    // avoid text selection/scroll
+        dragging = tile;
+        ghost = makeGhost(tile.textContent.trim(), e.clientX, e.clientY);
+        window.addEventListener('pointermove', onMove, { passive: false });
+        window.addEventListener('pointerup', onUp, { passive: false });
+      });
+    });
+  }
+  bindTiles();
+
+  // Rebind after reset, in case DOM changed
+  window.addEventListener('rebind-tiles', bindTiles);
+})();
+
+/* -----------------------------------------------------------
+   2) Radical groups mapping (10 groups) — keep labels consistent
+   - Every kanji belongs to exactly one label
+----------------------------------------------------------- */
+const KANJI_TO_GROUP = {
+  // 言偏
+  '話':'言偏','読':'言偏','説':'言偏','語':'言偏','計':'言偏',
+  // 宀（うかんむり）
+  '家':'宀','客':'宀','室':'宀','安':'宀','字':'宀','宅':'宀',
+  // 辶（しんにょう）
+  '近':'辶','遠':'辶','週':'辶',
+  // 日（にち）
+  '時':'日','明':'日','暗':'日','曜':'日','晩':'日',
+  // 雨
+  '電':'雨','雲':'雨','雪':'雨',
+  // 氵（水偏）
+  '海':'氵','泳':'氵','深':'氵','油':'氵','酒':'氵',
+  // 亻（にんべん）
+  '借':'亻','作':'亻','低':'亻','体':'亻','休':'亻','何':'亻',
+  // 彳（ぎょうにんべん）
+  '行':'彳','待':'彳','後':'彳',
+  // 广（まだれ）
+  '店':'广','広':'广','度':'广',
+  // 食
+  '飲':'食','飯':'食','館':'食',
+};
+
+const ACTIVE_LABELS = ['言偏','宀','辶','日','雨','氵','亻','彳','广','食'];
+
+/* -----------------------------------------------------------
+   3) Scoring helpers
+----------------------------------------------------------- */
+function clearMarks() {
+  document.querySelectorAll('.kanji').forEach(k => k.classList.remove('incorrect','correct'));
+}
+
+function zonesWithTiles() {
+  return Array.from(document.querySelectorAll('.zone')).map(zone => {
+    const tiles = Array.from(zone.querySelectorAll('.kanji'));
+    const texts = tiles.map(el => el.textContent.trim());
+    return { zone, tiles, texts };
+  });
+}
+
+function labelOf(ch) { return KANJI_TO_GROUP[ch] || null; }
+
+// Build expected sets only from kanji present on the page
+function expectedSetsOnPage() {
+  const allTiles = Array.from(document.querySelectorAll('.kanji'))
+    .map(el => el.textContent.trim());
+  const sets = {};
+  ACTIVE_LABELS.forEach(lbl => sets[lbl] = new Set());
+  for (const ch of allTiles) {
+    const lbl = labelOf(ch);
+    if (lbl && ACTIVE_LABELS.includes(lbl)) sets[lbl].add(ch);
+  }
+  // Remove empty groups (if some labels not used on this page)
+  for (const lbl of Object.keys(sets)) {
+    if (sets[lbl].size === 0) delete sets[lbl];
+  }
+  return sets; // e.g., { '言偏': Set([...]), '宀': Set([...]), ... }
+}
+
+function setEquals(a, b) {
+  if (a.size !== b.size) return false;
+  for (const v of a) if (!b.has(v)) return false;
+  return true;
+}
+
+// Dominant label for a box = active label with the highest overlap.
+// If there's a tie for highest overlap, return null → the box is treated as mixed.
+function dominantLabel(texts, expected) {
+  let best = null, bestN = 0, tie = false;
+  for (const [lbl, targetSet] of Object.entries(expected)) {
+    const n = texts.filter(t => targetSet.has(t)).length;
+    if (n > bestN) { best = lbl; bestN = n; tie = false; }
+    else if (n === bestN && n > 0) { tie = true; }
+  }
+  return (tie ? null : best);
+}
+
+/* -----------------------------------------------------------
+   4) Check Answers — order‑agnostic, strict grouping
+   - Only "Correct" when every group's full set is intact in one box (no extras)
+   - Highlight only incorrect tiles red in mixed/incorrect boxes
+----------------------------------------------------------- */
+(function scoringInit() {
+  const resultEl = document.getElementById('result');
+
+  document.getElementById('check')?.addEventListener('click', () => {
+    clearMarks();
+
+    const expected = expectedSetsOnPage();
+    const zones = zonesWithTiles();
+
+    let anyIncorrect = false;
+
+    // Per-box marking: only mismatched tiles turn red
+    zones.forEach(({ tiles, texts }) => {
+      if (tiles.length === 0) return;
+
+      const dom = dominantLabel(texts, expected);
+
+      if (!dom) {
+        // tie or no overlap → mark everything in the box red
+        tiles.forEach(el => el.classList.add('incorrect'));
+        anyIncorrect = tiles.length > 0 || anyIncorrect;
+        return;
+      }
+
+      tiles.forEach(el => {
+        const ch = el.textContent.trim();
+        const lbl = labelOf(ch);
+        if (!lbl || !expected[lbl] || lbl !== dom) {
+          el.classList.add('incorrect');     // only this tile turns red
+          anyIncorrect = true;
+        } else {
+          // Optional: mark correct tiles
+          // el.classList.add('correct');
+        }
+      });
+    });
+
+    // Global perfect: each label's full set appears exactly in one box (no extras)
+    const remaining = zones.map(({ texts }) => new Set(texts));
+    let matchedLabels = 0;
+    for (const [lbl, need] of Object.entries(expected)) {
+      const idx = remaining.findIndex(zoneSet => setEquals(zoneSet, need));
+      if (idx !== -1) { matchedLabels++; remaining.splice(idx, 1); }
+    }
+    const allPerfect = (matchedLabels === Object.keys(expected).length);
+
+    if (resultEl) {
+      if (allPerfect && !anyIncorrect) {
+        resultEl.textContent = '✅ Correct! All radical groups are complete (box order doesn’t matter).';
+        resultEl.style.color  = '#0a7';
+      } else {
+        resultEl.textContent = '❌ Some tiles are incorrect (highlighted in red). Make each box a single radical group with all members.';
+        resultEl.style.color  = '#d21';
+      }
+    }
+  });
+
+  // Reset: return all tiles to tray and clear marks
+  document.getElementById('reset')?.addEventListener('click', () => {
+    clearMarks();
+    const tray = document.getElementById('kanji-tray');
+    if (tray) document.querySelectorAll('.kanji').forEach(k => tray.appendChild(k));
+    if (resultEl) { resultEl.textContent = ''; resultEl.style.color = ''; }
+    // Rebind pointer handlers, in case DOM changed
+    window.dispatchEvent(new Event('rebind-tiles'));
+  });
+})();
+
+</script>
+</body>
+</html>
